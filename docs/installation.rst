@@ -32,7 +32,7 @@ You can either clone the public repository:
 
 .. code-block:: console
 
-    $ git clone https://github.com/Studio-51/mkpreview.git
+    $ git clone git@github.com:Studio-51/mkpreview.git
 
 
 Once you have a copy of the source, you can install it with:
@@ -49,4 +49,4 @@ Or you can use the follow command:
     $ sudo make uninstall  # to uninstall
 
 
-.. _Github repo: https://github.com/Studio-51/mkpreview.git
+.. _Github repo: git@github.com:Studio-51/mkpreview.git

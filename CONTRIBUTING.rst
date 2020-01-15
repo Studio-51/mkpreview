@@ -15,7 +15,7 @@ Types of Contributions
 Report Bugs
 ~~~~~~~~~~~
 
-Report bugs at https://github.com/Studio-51/mkpreview.git/issues.
+Report bugs at git@github.com:Studio-51/mkpreview.git/issues.
 
 If you are reporting a bug, please include:
 

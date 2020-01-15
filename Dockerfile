@@ -1,5 +1,5 @@
 FROM ubuntu:latest
-MAINTAINER Colin Bitterfield <colin@bitterfield.com>
+MAINTAINER Colin Bitterfield <cbitterfield@gmail.com>
 
 # Set up environment
 RUN apt-get update && apt-get install -y \
