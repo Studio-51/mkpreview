@@ -2,11 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="983d3a82-fd92-478c-9837-2a35bfa18ea1" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/docs/cli.rst" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/index.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/index.rst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/usage.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/usage.rst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mkpreview/mkpreview.py" beforeDir="false" afterPath="$PROJECT_DIR$/mkpreview/mkpreview.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.travis.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.travis.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -139,7 +136,7 @@
       <option name="presentableId" value="Default" />
       <updated>1579066490427</updated>
       <workItem from="1579066491889" duration="9622000" />
-      <workItem from="1579117584439" duration="3317000" />
+      <workItem from="1579117584439" duration="4479000" />
     </task>
     <task id="LOCAL-00001" summary="Updates for deployment">
       <created>1579118837066</created>
@@ -176,7 +173,21 @@
       <option name="project" value="LOCAL" />
       <updated>1579120095372</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="more minor changes for CI">
+      <created>1579121063150</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1579121063150</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Build release rc1">
+      <created>1579121101304</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1579121101304</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -186,7 +197,9 @@
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="Updates for deployment" />
     <MESSAGE value="Minor changes for preparing to bump release" />
-    <option name="LAST_COMMIT_MESSAGE" value="Minor changes for preparing to bump release" />
+    <MESSAGE value="more minor changes for CI" />
+    <MESSAGE value="Build release rc1" />
+    <option name="LAST_COMMIT_MESSAGE" value="Build release rc1" />
   </component>
   <component name="WindowStateProjectService">
     <state x="440" y="191" key="#Docker" timestamp="1579066518854">
@@ -226,10 +239,10 @@
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
     <state x="585" y="389" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/-1920.0.1920.1080/0.0.1680.1050@0.0.1680.1050" timestamp="1579101121520" />
-    <state x="404" y="116" key="CommitChangelistDialog2" timestamp="1579120095228">
+    <state x="404" y="116" key="CommitChangelistDialog2" timestamp="1579121101181">
       <screen x="0" y="23" width="1680" height="976" />
     </state>
-    <state x="404" y="116" key="CommitChangelistDialog2/-1920.23.1920.1057/0.23.1680.976@0.23.1680.976" timestamp="1579120095228" />
+    <state x="404" y="116" key="CommitChangelistDialog2/-1920.23.1920.1057/0.23.1680.976@0.23.1680.976" timestamp="1579121101181" />
     <state width="1638" height="295" key="GridCell.Tab.0.bottom" timestamp="1579117558296">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
@@ -255,11 +268,11 @@
     </state>
     <state x="328" y="108" key="SettingsEditor/-1920.0.1920.1080/0.0.1680.1050@0.0.1680.1050" timestamp="1579117466713" />
     <state x="328" y="108" key="SettingsEditor/-1920.23.1920.1057/0.0.1680.1050@0.0.1680.1050" timestamp="1579067756396" />
-    <state x="440" y="270" key="Vcs.Push.Dialog.v2" timestamp="1579119863342">
+    <state x="440" y="270" key="Vcs.Push.Dialog.v2" timestamp="1579121171291">
       <screen x="0" y="23" width="1680" height="976" />
     </state>
     <state x="440" y="266" key="Vcs.Push.Dialog.v2/-1920.0.1920.1080/0.0.1680.1050@0.0.1680.1050" timestamp="1579066600131" />
-    <state x="440" y="270" key="Vcs.Push.Dialog.v2/-1920.23.1920.1057/0.23.1680.976@0.23.1680.976" timestamp="1579119863342" />
+    <state x="440" y="270" key="Vcs.Push.Dialog.v2/-1920.23.1920.1057/0.23.1680.976@0.23.1680.976" timestamp="1579121171291" />
     <state x="494" y="345" key="com.intellij.ide.util.TipDialog" timestamp="1579117585727">
       <screen x="0" y="23" width="1680" height="976" />
     </state>
@@ -268,6 +281,10 @@
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
     <state x="623" y="449" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/-1920.0.1920.1080/0.0.1680.1050@0.0.1680.1050" timestamp="1579066555843" />
+    <state x="555" y="311" key="git4idea.merge.GitMergeDialog" timestamp="1579121138297">
+      <screen x="0" y="23" width="1680" height="976" />
+    </state>
+    <state x="555" y="311" key="git4idea.merge.GitMergeDialog/-1920.23.1920.1057/0.23.1680.976@0.23.1680.976" timestamp="1579121138297" />
     <state x="520" y="325" key="git4idea.merge.GitPullDialog" timestamp="1579067364083">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
