@@ -3,7 +3,7 @@
 
 """The setup script."""
 
-__author__ = 'cbitterfield'
+__author__ = 'Colin Bitterfield'
 
 import io
 import pip
@@ -44,9 +44,9 @@ SETUP_REQUIREMENTS = ['pytest-runner==4.2']
 
 setup(
     name=PACKAGE_NAME,
-    version='version='0.1.3'',
+    version='0.1.3',
     author='Colin Bitterfield',
-    author_email='cbitterfield@gmail.com',
+    author_email='colin@bitterfield.com',
     description=DESCRIPTION,
     long_description=read('README.rst') + '\n\n' + read('CHANGELOG.rst'),
     keywords='',
