@@ -13,7 +13,8 @@ mkpreview
         :target: https://python-boilerplate.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
-mkpreview contains all the boilerplate you need to create a Python package.
+mkpreview builds a grid of images from a movie file.
+Support for all video file types in FFMPEG
 
 Get Started!
 ------------

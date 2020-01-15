@@ -5,7 +5,7 @@ Credits
 Development Lead
 ----------------
 
-* Colin Bitterfield <cbitterfield@gmail.com>
+* Colin Bitterfield <colin@bitterfield.com>
 
 Contributors
 ------------

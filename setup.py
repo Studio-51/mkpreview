@@ -16,8 +16,8 @@ except ImportError: # for pip <= 9.0.3
 from setuptools import setup, find_packages
 
 PACKAGE_NAME = 'mkpreview'
-DESCRIPTION = 'mkpreview contains all the '\
-              'boilerplate you need to create a Python package.'
+DESCRIPTION = 'mkpreview creates previews from movie files '\
+              'Support for all FFMPEG video types.'
 
 
 def read(*filenames, **kwargs):
@@ -68,10 +68,6 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
-        "Programming Language :: Python :: 2",
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',

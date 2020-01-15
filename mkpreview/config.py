@@ -6,7 +6,9 @@ Created on Jan 9, 2020
 A list of common definitions
 '''
 
-######## Definitions Import as needed  ##########
+######## Configurations Import as needed  ##########
+
+FFLOCATIONS = ['/opt/local/bin', '/usr/local/bin', '/usr/bin']
 
 VIDEO_EXTENSIONS = ['avi', 'mp4', 'mov', 'mpeg', 'mpg', 'm2p', 'mkv', '3gp', 'ogg', 'flv', 'f4v', 'f4p', 'f4a', 'f4b']
 

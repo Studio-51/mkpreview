@@ -3,12 +3,13 @@
 
 # Library Imports
 #
+# Get Package version
 
+import argparse
 # Required
 import os
-import sys
 import shutil
-import argparse
+import sys
 import time
 from datetime import datetime
 
@@ -22,18 +23,16 @@ from wand.drawing import Drawing
 from wand.image import Image
 from wand.display import display as Display
 import hashlib
-from database import Database
-from __init__ import __version__
-from __init__ import __email__
-from __init__ import __author__
-from definitions import COLORS
-from definitions import VIDEO_EXTENSIONS
-from definitions import TABLE
+
+
 import random
 import string
 
 
+from version import __version__
 
+#__author__ = 'Colin Bitterfield'
+#__email__ = 'colin@bitterfield.com'
 __prog_name__ = os.path.basename(__file__)
 __short_name__ = os.path.splitext(__prog_name__)[0]
 __console_size_ = shutil.get_terminal_size((80, 20))[0]
@@ -51,6 +50,10 @@ DEBUG = False
 DRYRUN = None
 VERBOSE = False
 QUIET = None
+myDB = None
+VIDEOS = None
+HWACCEL = None
+FFLOCATIONS = None
 
 # Global Variables # set defaults here.
 if DEBUG:
@@ -60,6 +63,7 @@ if DEBUG:
 
 FFMPEG = ""
 FFPROBE = ""
+
 
 
 ## Functions
@@ -185,12 +189,15 @@ def setup(configuration):
     global VIDEOS
     global DRYRUN
     global HWACCEL
+    global FFLOCATIONS
 
     # Set Globals if needed
     DEBUG = configuration.debug if configuration.debug else DEBUG
     VERBOSE = configuration.verbose if configuration.verbose else VERBOSE
     DRYRUN = configuration.dryrun if configuration.dryrun else DRYRUN
     QUIET = configuration.quiet if configuration.quiet else QUIET
+    COLORS = dict()
+    TABLE = list()
 
     # Do some quick testing on colors.
 
@@ -245,7 +252,7 @@ def setup(configuration):
     if DEBUG: print(VIDEOS)
 
     # Find and define FFMPEG Tools.
-    FFLOCATIONS = ['/opt/local/bin', '/usr/local/bin', '/usr/bin']
+    if not FFLOCATIONS: FFLOCATIONS = ['/usr/local/bin']
     for FF in FFLOCATIONS:
         FFMPEG = os.path.join(FF, 'ffprobe')
         FFPROBE = os.path.join(FF, 'ffprobe')
@@ -639,4 +646,7 @@ def main():
 
 if __name__ == "__main__":
 
-    main()
+    myglobals = globals().copy()
+    for k,v in myglobals.items():
+        print('Key {0} Value {1}'.format(k,v))
+    #main()

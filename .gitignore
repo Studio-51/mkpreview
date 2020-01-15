@@ -105,3 +105,9 @@ ENV/
 log.html
 output.xml
 report.html
+
+# Mac Files
+.DS_Store
+
+# Virtual Env Directory
+.virtualenvs/

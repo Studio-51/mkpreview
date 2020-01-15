@@ -15,6 +15,8 @@ QUIET=False
 # Tables
 TABLE=dict()
 
+
+# noinspection PyProtectedMember
 class Database():
     '''
     Database class provides a higher level connector to SQLite3
