@@ -2,20 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="983d3a82-fd92-478c-9837-2a35bfa18ea1" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.bumpversion.cfg" beforeDir="false" afterPath="$PROJECT_DIR$/.bumpversion.cfg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AUTHORS.rst" beforeDir="false" afterPath="$PROJECT_DIR$/AUTHORS.rst" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CHANGELOG.rst" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.rst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.rst" beforeDir="false" afterPath="$PROJECT_DIR$/README.rst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/usage.rst" beforeDir="false" afterPath="$PROJECT_DIR$/docs/usage.rst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mkpreview/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/mkpreview/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mkpreview/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/mkpreview/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mkpreview/database.py" beforeDir="false" afterPath="$PROJECT_DIR$/mkpreview/database.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mkpreview/mkpreview.py" beforeDir="false" afterPath="$PROJECT_DIR$/mkpreview/mkpreview.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mkpreview/version.py" beforeDir="false" afterPath="$PROJECT_DIR$/mkpreview/version.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/setup.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,6 +32,11 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="PREVIOUS_COMMIT_AUTHORS">
+      <list>
+        <option value="Colin Bitterfield &lt;colin@bitterfield.com&gt;" />
+      </list>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="UPDATE_TYPE" value="REBASE" />
   </component>
@@ -138,8 +131,16 @@
       <option name="presentableId" value="Default" />
       <updated>1579066490427</updated>
       <workItem from="1579066491889" duration="9622000" />
-      <workItem from="1579117584439" duration="1168000" />
+      <workItem from="1579117584439" duration="1508000" />
     </task>
+    <task id="LOCAL-00001" summary="Updates for deployment">
+      <created>1579118837066</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1579118837066</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -147,6 +148,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="Updates for deployment" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updates for deployment" />
   </component>
   <component name="WindowStateProjectService">
     <state x="440" y="191" key="#Docker" timestamp="1579066518854">
@@ -182,6 +185,10 @@
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
     <state x="585" y="389" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/-1920.0.1920.1080/0.0.1680.1050@0.0.1680.1050" timestamp="1579101121520" />
+    <state x="404" y="116" key="CommitChangelistDialog2" timestamp="1579118836834">
+      <screen x="0" y="23" width="1680" height="976" />
+    </state>
+    <state x="404" y="116" key="CommitChangelistDialog2/-1920.23.1920.1057/0.23.1680.976@0.23.1680.976" timestamp="1579118836834" />
     <state width="1638" height="295" key="GridCell.Tab.0.bottom" timestamp="1579117558296">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
