@@ -111,3 +111,6 @@ report.html
 
 # Virtual Env Directory
 .virtualenvs/
+
+# Idea work space
+.idea/
