@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="983d3a82-fd92-478c-9837-2a35bfa18ea1" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.travis.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.travis.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements/prod.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements/prod.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -136,7 +135,7 @@
       <option name="presentableId" value="Default" />
       <updated>1579066490427</updated>
       <workItem from="1579066491889" duration="9622000" />
-      <workItem from="1579117584439" duration="4479000" />
+      <workItem from="1579117584439" duration="4777000" />
     </task>
     <task id="LOCAL-00001" summary="Updates for deployment">
       <created>1579118837066</created>
@@ -187,7 +186,14 @@
       <option name="project" value="LOCAL" />
       <updated>1579121101304</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Build release rc1">
+      <created>1579122453474</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1579122453474</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
