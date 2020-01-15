@@ -8,6 +8,7 @@ Welcome to mkpreview documentation!
    readme
    installation
    usage
+   cli
    modules
    contributing
    authors
