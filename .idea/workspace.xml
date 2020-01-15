@@ -2,9 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="983d3a82-fd92-478c-9837-2a35bfa18ea1" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.bumpversion.cfg" beforeDir="false" afterPath="$PROJECT_DIR$/.bumpversion.cfg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/setup.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mkpreview/version.py" beforeDir="false" afterPath="$PROJECT_DIR$/mkpreview/version.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -132,7 +131,7 @@
       <option name="presentableId" value="Default" />
       <updated>1579066490427</updated>
       <workItem from="1579066491889" duration="9622000" />
-      <workItem from="1579117584439" duration="2167000" />
+      <workItem from="1579117584439" duration="2365000" />
     </task>
     <task id="LOCAL-00001" summary="Updates for deployment">
       <created>1579118837066</created>
@@ -148,7 +147,21 @@
       <option name="project" value="LOCAL" />
       <updated>1579119151891</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Minor changes for preparing to bump release">
+      <created>1579119855838</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1579119855838</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Minor changes for preparing to bump release">
+      <created>1579119928372</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1579119928372</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -157,7 +170,8 @@
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="Updates for deployment" />
-    <option name="LAST_COMMIT_MESSAGE" value="Updates for deployment" />
+    <MESSAGE value="Minor changes for preparing to bump release" />
+    <option name="LAST_COMMIT_MESSAGE" value="Minor changes for preparing to bump release" />
   </component>
   <component name="WindowStateProjectService">
     <state x="440" y="191" key="#Docker" timestamp="1579066518854">
@@ -193,10 +207,10 @@
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
     <state x="585" y="389" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/-1920.0.1920.1080/0.0.1680.1050@0.0.1680.1050" timestamp="1579101121520" />
-    <state x="404" y="116" key="CommitChangelistDialog2" timestamp="1579119855709">
+    <state x="404" y="116" key="CommitChangelistDialog2" timestamp="1579119928248">
       <screen x="0" y="23" width="1680" height="976" />
     </state>
-    <state x="404" y="116" key="CommitChangelistDialog2/-1920.23.1920.1057/0.23.1680.976@0.23.1680.976" timestamp="1579119855709" />
+    <state x="404" y="116" key="CommitChangelistDialog2/-1920.23.1920.1057/0.23.1680.976@0.23.1680.976" timestamp="1579119928248" />
     <state width="1638" height="295" key="GridCell.Tab.0.bottom" timestamp="1579117558296">
       <screen x="0" y="0" width="1680" height="1050" />
     </state>
