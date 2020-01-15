@@ -646,7 +646,8 @@ def main():
 
 if __name__ == "__main__":
 
-    myglobals = globals().copy()
-    for k,v in myglobals.items():
-        print('Key {0} Value {1}'.format(k,v))
-    #main()
+    if DEBUG:
+        myglobals = globals().copy()
+        for k,v in myglobals.items():
+            print('Key {0} Value {1}'.format(k,v))
+    main()
