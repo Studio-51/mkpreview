@@ -64,15 +64,15 @@ setup(
     url='https://github.com/cbitterfield/mkpreview.git',
     zip_safe=False,
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
-        'Intended Audience :: Developers',
+        'Development Status :: 2 - beta',
+        'Intended Audience :: End Users',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Environment :: Console',
-        'Topic :: Software Development :: Libraries :: Python Modules',
+        'Topic :: Video Tooling :: Libraries :: Python Utilities',
     ],
 
     license="MIT license",

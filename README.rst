@@ -4,13 +4,13 @@ mkpreview
 
 
 .. image:: https://img.shields.io/pypi/v/python_boilerplate.svg
-        :target: https://pypi.python.org/pypi/python_boilerplate
+        :target: https://pypi.org/project/mkpreview/
 
 .. image:: https://img.shields.io/travis/fgriberi/python_boilerplate.svg
-        :target: https://travis-ci.org/fgriberi/python_boilerplate
+        :target: https://travis-ci.org/cbitterfield/mkpreview
 
 .. image:: https://readthedocs.org/projects/python-boilerplate/badge/?version=latest
-        :target: https://python-boilerplate.readthedocs.io/en/latest/?badge=latest
+        :target: https://readthedocs.org/projects/mkpreview/en/latest/?badge=latest
         :alt: Documentation Status
 
 mkpreview builds a grid of images from a movie file.
