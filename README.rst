@@ -3,15 +3,18 @@ mkpreview
 ==================
 
 
-.. image:: https://img.shields.io/pypi/v/python_boilerplate.svg
+.. image:: https://img.shields.io/github/v/release/:Studio-51/:mkpreview?sort=semver
         :target: https://pypi.org/project/mkpreview/
 
 .. image:: https://img.shields.io/travis/fgriberi/python_boilerplate.svg
         :target: https://travis-ci.org/cbitterfield/mkpreview
 
-.. image:: https://readthedocs.org/projects/python-boilerplate/badge/?version=latest
-        :target: https://readthedocs.org/projects/mkpreview/en/latest/?badge=latest
+.. image:: https://readthedocs.org/projects/mkpreview/badge/?version=latest
+        :target: https://mkpreview.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
+
+.. image:: https://img.shields.io/pypi/pyversions/mkpreview?style=plastic
+        :target: https://pypi.org/project/mkpreview/
 
 mkpreview builds a grid of images from a movie file.
 Support for all video file types in FFMPEG
