@@ -31,6 +31,8 @@ optional arguments:
                         Tile Background Color
   -p TILE_FG_COLOR, --tile-foreground TILE_FG_COLOR
                         Tile Pen Color
+  -fs FONT_SIZE, --font-size FONT_SIZE
+                        Font size for text default is 24pt
   -i IN_FILE, --input IN_FILE
                         Video input, can by a file or directory. If directory,
                         it will not be recursive
@@ -53,14 +55,22 @@ The filename of the output will be the part_id-md5-originalBaseName.png. If
 the part_id and md5 are unset the filename will be the original base name.png
 
 Example 1: `sample`_
+---------------------------
     .. image:: http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/WhatCarCanYouGetForAGrand.jpg
     .. :scale: 50 %
     .. :alt: WhatCarCanYouGetForAGrand
 .. _sample: http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4
 
-$ mkpreview -i WhatCarCanYouGetForAGrand.mp4 --output-dir /tmp/ --md5 --tile-width 320 --tile-rows 7 \
+.. code-block:: python
+
+
+    ./mkpreview.py -i /Users/colinbitterfield/Downloads/WhatCarCanYouGetForAGrand.mp4 \
+ 	--output-dir /tmp/ --md5 --tile-width 320 --tile-rows 7 \
         --tile-cols 7 --tile-background yellow \
-        --tile-foreground blue \
+        --tile-foreground blue --font-size 60 \
         --store-db-file /tmp/myDatabase.db \
         -create-new-db -override previewcard
 
+Results:
+
+.. image:: images/previewcard.jpg

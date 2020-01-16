@@ -379,7 +379,7 @@ def getCLIparams(cli_args):
                         )
 
     parser.add_argument('-fs', '--font-size',
-                        help='Tile Pen Color',
+                        help='Font size for text default is 24pt',
                         action='store',
                         required=False,
                         dest='font_size',
