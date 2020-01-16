@@ -12,6 +12,8 @@ import shutil
 import sys
 import time
 from datetime import datetime
+from config import *
+from database import Database
 
 # Add this module's location to syspath
 sys.path.insert(0, os.getcwd())
@@ -53,7 +55,7 @@ QUIET = None
 myDB = None
 VIDEOS = None
 HWACCEL = None
-FFLOCATIONS = None
+
 
 # Global Variables # set defaults here.
 if DEBUG:
@@ -83,6 +85,7 @@ def md5Checksum(filename):
             if not data:
                 break
             m.update(data)
+
         return m.hexdigest()
 
 
@@ -152,7 +155,7 @@ def video_info(**kwargs):
                       'show_entries': "stream=bit_rate,height,width,codec_long_name,display_aspect_ratio,avg_frame_rate,bit_rate,max_bit_rate,nb_frames : stream_tags= : stream_disposition= :format=duration,size :format_tags= "
 
                       }
-
+        if DEBUG: print("Get Info FFPROBE={0} arguments {1}".format(FFPROBE,probe_args))
         info = ffmpeg.probe(filename, cmd=FFPROBE, **probe_args)
         if DEBUG: print(info)
         local_info['codec_long_name'] = info['streams'][0]['codec_long_name']
@@ -190,14 +193,15 @@ def setup(configuration):
     global DRYRUN
     global HWACCEL
     global FFLOCATIONS
+    global FFPROBE
+    global FFMPEG
 
     # Set Globals if needed
     DEBUG = configuration.debug if configuration.debug else DEBUG
     VERBOSE = configuration.verbose if configuration.verbose else VERBOSE
     DRYRUN = configuration.dryrun if configuration.dryrun else DRYRUN
     QUIET = configuration.quiet if configuration.quiet else QUIET
-    COLORS = dict()
-    TABLE = list()
+
 
     # Do some quick testing on colors.
 
@@ -213,21 +217,18 @@ def setup(configuration):
         print('Configuration: {}'.format(configuration))
         sys.exit(1)
 
-    if not configuration.dbfile:
-        configuration.dbfile = os.getcwd() + "/default.db"
-
-    # Assign DB Name
-    myDB = Database(configuration.dbfile)
 
     if not os.path.isfile(configuration.dbfile) or configuration.create_newdb:
+        myDB = Database(os.getcwd() + "/default.db")
         if DEBUG: print('Database {} created'.format(configuration.dbfile))
         # Create New database file
-        myDB.create(overwrite=False)
+        myDB.create(overwrite=False,backup=False)
         myDB.connect()
         myDB.createTable(table='preview',overwrite=False,fields=TABLE['preview'],unique=(['filename','md5']))
         myDB.close()
     else:
         # Make sure we have a table
+        myDB = Database(configuration.dbfile)
         myDB.connect()
         if not myDB.isTable(table='preview'):
             myDB.createTable(table='preview',overwrite=False,fields=TABLE['preview'],unique=(['filename','md5']))
@@ -254,10 +255,13 @@ def setup(configuration):
     # Find and define FFMPEG Tools.
     if not FFLOCATIONS: FFLOCATIONS = ['/usr/local/bin']
     for FF in FFLOCATIONS:
-        FFMPEG = os.path.join(FF, 'ffprobe')
+        FFMPEG = os.path.join(FF, 'ffmpeg')
         FFPROBE = os.path.join(FF, 'ffprobe')
         if os.path.isfile(FFMPEG) and os.path.isfile(FFPROBE):
             return
+
+    if DEBUG: print('FFMPEG Binaries located: {0} {1}'.format(FFPROBE,FFMPEG))
+
 
     # Set HWAccels
     if configuration.hwaccel == 'cuda':
@@ -287,8 +291,8 @@ def getCLIparams(cli_args):
     parser = argparse.ArgumentParser(None)
     parser.prog = __prog_name__
     parser.description = "This program will create a video preview file of a given video"
-    parser.epilog = """The filename of the output will be the edge_id-md5-originalBaseName.png.
-    If the edge_id and md5 are unset the filename will be the original base name.png
+    parser.epilog = """The filename of the output will be the part_id-md5-originalBaseName.png.
+    If the part_id and md5 are unset the filename will be the original base name.png
     """
 
 
@@ -358,7 +362,7 @@ def getCLIparams(cli_args):
                         default='5'
                         )
 
-    parser.add_argument('-b', '--tile-backgrond',
+    parser.add_argument('-b', '--tile-background',
                         help='Tile Background Color',
                         action='store',
                         required=False,
@@ -374,6 +378,14 @@ def getCLIparams(cli_args):
                         default='white'
                         )
 
+    parser.add_argument('-fs', '--font-size',
+                        help='Tile Pen Color',
+                        action='store',
+                        required=False,
+                        dest='font_size',
+                        default='24'
+                        )
+
     parser.add_argument('-i', '--input',
                         help='Video input, can by a file or directory. If directory, it will not be recursive',
                         type=str,
@@ -382,13 +394,6 @@ def getCLIparams(cli_args):
                         dest='in_file'
                         )
 
-    parser.add_argument('-e', '--edge-id',
-                        help='Edge Id of video, if set the filename will start with the edge_id',
-                        type=str,
-                        action='store',
-                        required=False,
-                        dest='edge_id'
-                        )
 
     parser.add_argument('-o', '--output-dir',
                         help='Where to put the finished files',
@@ -441,11 +446,19 @@ def getCLIparams(cli_args):
                         )
 
     parser.add_argument('-studio-id',
-                        help='Replace the Studio ID with the EdgeID',
+                        help='Replace the this id, first part of filename for a part-id use in conjunction with -part-id',
                         action='store',
                         required=False,
                         dest='studio_id',
                         default=None
+                        )
+
+    parser.add_argument('-part-id',
+                        help='Change first alpha part of filename for the part-id',
+                        type=str,
+                        action='store',
+                        required=False,
+                        dest='part_id'
                         )
 
     parser.add_argument('-hwaccel',
@@ -456,8 +469,11 @@ def getCLIparams(cli_args):
                         dest='hwaccel',
                         default=None
                         )
-
+    if len(sys.argv)==1:
+        parser.print_help(sys.stderr)
+        sys.exit(1)
     parse_out = parser.parse_args(cli_args)
+
 
     return parse_out
 
@@ -475,7 +491,7 @@ def main():
                                                                                              cols=CONFIG.tile_cols,
                                                                                              width=CONFIG.tile_width))
         if not QUIET: print('Background Color is set to {color}'.format(color=CONFIG.tile_bk_color))
-
+        print('Video Information for {}'.format(video))
         SUCCESS, banner_info = video_info(filename=video)
 
         if not SUCCESS: return 1
@@ -483,6 +499,7 @@ def main():
         if CONFIG.md5file and not DRYRUN:
             md5value = md5Checksum(video)
             banner_info['md5'] = md5value
+            if not QUIET: print('MD5 calculated as {}'.format(md5value))
         elif CONFIG.md5file:
             banner_info['md5'] = "13227ada4af540092b7c5821c9ff321a"
             md5value = randomString(stringLength=32)
@@ -492,12 +509,12 @@ def main():
         banner_info['basename'] = os.path.basename(video)
         banner_info['dirname'] = os.path.dirname(video)
 
-        if CONFIG.edge_id and CONFIG.studio_id:
+        if CONFIG.part_id and CONFIG.studio_id:
             # Change the filename for display
             num_id = [str(i) for i in list(os.path.basename(banner_info['basename'].rsplit('.', 1)[0])) if i.isdigit()]
-            banner_info['edge_id'] = CONFIG.edge_id + "".join(num_id)
+            banner_info['part_id'] = CONFIG.part_id + "".join(num_id)
         else:
-            banner_info['edge_id'] = None
+            banner_info['part_id'] = None
 
         output_filename = CONFIG.out_dir + "/"
 
@@ -509,8 +526,8 @@ def main():
         if CONFIG.override:
             output_filename = CONFIG.out_dir + "/" + CONFIG.override
 
-        if banner_info['edge_id']:
-            output_filename = CONFIG.out_dir + "/" + banner_info['edge_id']
+        if banner_info['part_id']:
+            output_filename = CONFIG.out_dir + "/" + banner_info['part_id']
 
         if not QUIET and SUCCESS: print('Video Information: {info}'.format(info=banner_info))
         if not QUIET and SUCCESS: print('Output Filename = {output}'.format(output=output_filename))
@@ -579,7 +596,7 @@ def main():
             image_width, image_height = img.size
             resize_width = int(round(image_width * 1.05))
             border_width = int((resize_width - image_width) / 2 * - 1)
-            resize_height = int(round(image_height * 1.25))
+            resize_height = int(round(image_height * 1.25)) + (3 * int(CONFIG.font_size))
             border_height = ((resize_height - image_height) * -1) - border_width
 
             img.background_color = tile_bk_color
@@ -595,8 +612,8 @@ def main():
         if DEBUG: print('Image Border width {0} and height {1}'.format(border_width,border_height))
 
         # Create Banner Image
-        if CONFIG.edge_id:
-            message="Part Number: {EDGEID}\n".format(EDGEID=banner_info['edge_id'])
+        if CONFIG.part_id:
+            message="Part Number: {EDGEID}\n".format(EDGEID=banner_info['part_id'])
         else:
             message=""
         message += """{MP4NAME}
@@ -617,15 +634,15 @@ def main():
         if VERBOSE and not QUIET: print(message)
 
         with Drawing() as draw:
-            draw.stroke_color = Color('White')
+            draw.stroke_color = Color(CONFIG.tile_fg_color)
             draw.stroke_width = 1
-            draw.font = 'helvitica'
-            draw.font_size = 20
+            draw.font = 'helvetica'
+            draw.font_size = int(CONFIG.font_size)
             draw.text_kerning = 2
             draw.fill_color = Color(CONFIG.tile_fg_color)
             with Image(filename=output_filename + '.tmp.jpg') as img:
                 draw.draw(img)
-                img.annotate(message, draw, 10, 30)
+                img.annotate(message, draw, 30, int(CONFIG.font_size)+10)
                 img.save(filename=output_filename + '.jpg')
 
         os.remove(output_filename + '.tmp.jpg')
