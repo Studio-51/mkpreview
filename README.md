@@ -1,7 +1,7 @@
-#CLI Usage
+# CLI Usage
 
 
-##Command Line Usage
+### Command Line Usage
 
 
 ```
@@ -55,7 +55,7 @@ The filename of the output will be the part_id-md5-originalBaseName.png. If
 the part_id and md5 are unset the filename will be the original base name.png
 ```
 
-###Example 1:
+### Example 1:
 [sample](http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4)
 
 
@@ -70,6 +70,6 @@ the part_id and md5 are unset the filename will be the original base name.png
 ```
 
 
- ### Results
+### Results
 
 <IMG src="https://github.com/Studio-51/mkpreview/blob/master/docs/images/previewcard.jpg">
