@@ -63,3 +63,4 @@ $ mkpreview -i WhatCarCanYouGetForAGrand.mp4 --output-dir /tmp/ --md5 --tile-wid
         --tile-foreground blue \
         --store-db-file /tmp/myDatabase.db \
         -create-new-db -override previewcard
+
