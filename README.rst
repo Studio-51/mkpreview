@@ -3,7 +3,7 @@ mkpreview
 ==================
 
 
-.. image:: https://img.shields.io/github/v/release/:Studio-51/:mkpreview?sort=semver
+.. image:: https://img.shields.io/github/v/release/:cbitterfield/:mkpreview?sort=semver
         :target: https://pypi.org/project/mkpreview/
 
 .. image:: https://img.shields.io/travis/fgriberi/python_boilerplate.svg
