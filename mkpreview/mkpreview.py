@@ -12,8 +12,9 @@ import shutil
 import sys
 import time
 from datetime import datetime
-from config import *
-from database import Database
+from mkpreview.config import *
+from mkpreview.version import __version__
+from mkpreview.database import Database
 
 # Add this module's location to syspath
 sys.path.insert(0, os.getcwd())
@@ -31,10 +32,9 @@ import random
 import string
 
 
-from version import __version__
 
-#__author__ = 'Colin Bitterfield'
-#__email__ = 'colin@bitterfield.com'
+__author__ = 'Colin Bitterfield'
+__email__ = 'colin@bitterfield.com'
 __prog_name__ = os.path.basename(__file__)
 __short_name__ = os.path.splitext(__prog_name__)[0]
 __console_size_ = shutil.get_terminal_size((80, 20))[0]
