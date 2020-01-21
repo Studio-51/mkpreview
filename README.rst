@@ -17,7 +17,11 @@ mkpreview
         :target: https://pypi.org/project/mkpreview/
 
 mkpreview builds a grid of images from a movie file.
-Support for all video file types in FFMPEG
+- Support for all video file types in FFMPEG.
+- It will create a SQLite3 database with all of the video meta dataparameters and create an MD5 hash of the file
+- It provides very basic support for creating video part numbers
+
+
 
 Get Started!
 ------------
