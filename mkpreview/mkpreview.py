@@ -111,6 +111,7 @@ def getenviron(prefix, **kwargs):
     return return_list
 
 def runningInDocker():
+    if not os.path.isfile('/proc/self/cgroup'): return False
     with open('/proc/self/cgroup', 'r') as procfile:
         for line in procfile:
             fields = line.strip().split('/')

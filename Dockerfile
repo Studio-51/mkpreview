@@ -44,9 +44,10 @@ RUN pip3 install wheel==0.32.1 \
 	pillow==6.2.1 \
     wand==0.5.7 \
     ffmpeg-python==0.2.0 \
-    twine==1.13.0 \
-    mkpreview
+    twine==1.13.0
 
+
+RUN pip3 install mkpreview
 
 
 WORKDIR /mkpreview
