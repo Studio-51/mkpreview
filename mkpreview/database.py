@@ -65,11 +65,14 @@ class Database():
     flag = False
     message = ""
 
-    def __init__(self,database):
+    def __init__(self,database,**kwargs):
         self.database = database
         self.class_name = self.__class__.__name__
         method = sys._getframe().f_code.co_name
-        if not QUIET: print(
+        self.QUIET=kwargs.get('quiet',QUIET)
+        self.DEBUG=kwargs.get('debug',DEBUG)
+        print('Quite? {}'.format(self.QUIET))
+        if not self.QUIET: print(
             "{class_name}:{method}:initialized database:{database}".format(method=method, class_name=self.class_name,
                                                                            database=database))
         return None
@@ -79,6 +82,7 @@ class Database():
 
     def __exit__(self):
         self.close()
+
 
     def name(self,**kwargs):
         '''
@@ -95,14 +99,14 @@ class Database():
         method = sys._getframe().f_code.co_name
         message = self.database
         flag = True
-        if DEBUG: print('Class {classname} Method {method} Arguments {args}'.format(classname=self.class_name, method=method, args=kwargs))
+        if self.DEBUG: print('Class {classname} Method {method} Arguments {args}'.format(classname=self.class_name, method=method, args=kwargs))
 
         if os.path.isfile(self.database):
             flag=True
         else:
             flag=False
-        if DEBUG: print("Database file exists {}".format(flag))
-        if not QUIET: print("Database {}".format(message))
+        if self.DEBUG: print("Database file exists {}".format(flag))
+        if not self.QUIET: print("Database {}".format(message))
         return flag, message
 
     def create(self,**kwargs):
@@ -131,7 +135,7 @@ class Database():
         overwrite = kwargs.get('overwrite',False)
         backup = kwargs.get('backup',True)
 
-        if DEBUG: print('Class {classname} Method {method} Arguments {args}'.format(classname=self.class_name, method=method, args=kwargs))
+        if self.DEBUG: print('Class {classname} Method {method} Arguments {args}'.format(classname=self.class_name, method=method, args=kwargs))
 
         db_exists = self.name()[0]
 

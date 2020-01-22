@@ -48,7 +48,7 @@ __run_datetime__ = datetime.fromtimestamp(__timestamp__)  # Today's Date
 # Set to NONE to have no effect
 # If set to True or False, it will override the CLI
 
-DEBUG = False
+DEBUG = None
 DRYRUN = None
 VERBOSE = False
 QUIET = None
@@ -78,13 +78,15 @@ def getenviron(prefix, **kwargs):
 
     '''
     return_list = list()
-    key=""
-    value=""
+
 
     # KWARGS is a translation table KEY=Envionment Variable, Value is return key
     # If set scan for this list, if not use a prefix. If prefix is set, variables are limited to the prefix
     for evar in os.environ:
-        if prefix or evar in kwargs.keys():
+        key=""
+        value=""
+        if prefix in evar or evar in kwargs.keys():
+            if DEBUG: print('EVAL ENV: {0} {1}'.format(evar,os.environ.get(evar)))
             value = os.environ.get(evar)
             # Something we can work with
             if kwargs and not prefix:
@@ -255,6 +257,9 @@ def setup(configuration):
     QUIET = configuration.quiet if configuration.quiet else QUIET
 
 
+
+
+
     # Do some quick testing on colors.
 
     if configuration.colors:
@@ -270,21 +275,32 @@ def setup(configuration):
         sys.exit(1)
 
 
-    if not os.path.isfile(configuration.dbfile) or configuration.create_newdb:
-        myDB = Database(os.getcwd() + "/default.db")
+    if not configuration.dbfile or configuration.create_newdb:
+        if configuration.dbfile:
+            myDB = Database(configuration.dbfile,quiet=configuration.quiet,debug=configuration.debug)
+        else:
+            myDB = Database(os.getcwd() + "/mkpreview.db")
+
         if DEBUG: print('Database {} created'.format(configuration.dbfile))
         # Create New database file
-        myDB.create(overwrite=False,backup=False)
+        myDB.create(overwrite=False,backup=configuration.backup_db)
         myDB.connect()
-        myDB.createTable(table='preview',overwrite=False,fields=TABLE['preview'],unique=(['filename','md5']))
+        if configuration.md5:
+            myDB.createTable(table='preview',overwrite=False,fields=TABLE['preview'],unique=(['filename','md5']))
+        else:
+            myDB.createTable(table='preview',overwrite=False,fields=TABLE['preview'],unique=(['filename']))
         myDB.close()
     else:
         # Make sure we have a table
         myDB = Database(configuration.dbfile)
         myDB.connect()
         if not myDB.isTable(table='preview'):
-            myDB.createTable(table='preview',overwrite=False,fields=TABLE['preview'],unique=(['filename','md5']))
-            myDB.sqlExecute("""PRAGMA journal_mode=WAL;""")
+            if configuration.md5:
+                myDB.createTable(table='preview',overwrite=False,fields=TABLE['preview'],unique=(['filename','md5']))
+            else:
+                myDB.createTable(table='preview',overwrite=False,fields=TABLE['preview'],unique=(['filename']))
+        # Enable Multiuser and performance setting
+        myDB.sqlExecute("""PRAGMA journal_mode=WAL;""")
         myDB.close()
 
     VIDEOS = list()
@@ -337,34 +353,104 @@ def setup(configuration):
 
 
 
-def getCLIparams(cli_args):
-    global DOCKER
-    if DEBUG:
-        print('CLI Params {0}'.format(cli_args))
-    parser = argparse.ArgumentParser(None)
-    parser.prog = __prog_name__
-    parser.description = "This program will create a video preview file of a given video"
-    parser.epilog = """The filename of the output will be the part_id-md5-originalBaseName.png.
+def cli(**kwargs):
+    """Cli function expects at least version= to create the argparser
+     parameters:
+     ------------
+     debug
+     quiet
+     verbose
+     dryrun
+     docker
+     program
+     version
+     description
+     epilog
+
+     returns:
+     -------------
+     Name space for cli arguments similar to:
+     backup_db=None, colors=False, create_newdb=None, dbfile=None, debug=True, dryrun=False, font_size=20, hwaccel=None, in_file='/tmp', md5file=False, out_dir='/tmp', override=None, part_id=None, quiet=False, studio_id=None, tile_bk_color='Black', tile_cols=5, tile_fg_color='White', tile_rows=6, tile_width=320, verbose=True
+
+     """
+    # Get any Environment variables and use them if present
+    # Define variables being looked for, and their default values if not found
+    program_variables = {
+        'MKP_DEBUG'       : False,
+        'MKP_VERBOSE'     : False,
+        'MKP_QUIET'       : False,
+        'MKP_DRYRUN'      : False,
+        'MKP_TILE_WIDTH'  : 320,
+        'MKP_TILE_ROWS'   : 6,
+        'MKP_TILE_COLS'   : 5,
+        'MKP_BACKGROUND'  : 'Black',
+        'MKP_FOREGROUND'  : 'White',
+        'MKP_FONT_SIZE'   : 20,
+        'MKP_INPUT'       : None,
+        'MKP_OUTPUT_DIR'  : None,
+        'MKP_DATABASE'    : None,
+        'MKP_CREATEDB'    : None,
+        'MKP_BACKUPDB'    : None,
+        'MKP_MD5'         : False,
+        'MKP_STUDIOID'    : None,
+        'MKP_PARTID'      : None,
+        'MKP_HWACCEL'     : None
+    }
+
+    environment_variables = ", ".join(program_variables.keys())
+
+    # Read the Environment and update program variables accordingly
+
+    for myvar in os.environ:
+        if myvar in program_variables.keys():
+            program_variables[myvar] = os.environ.get(myvar,program_variables[myvar])
+
+    # Set a default parse description and epilog. Can be overwritten by program if this is called as a function
+    default_epilog = """The filename of the output will be the part_id-md5-originalBaseName.png.
     If the part_id and md5 are unset the filename will be the original base name.png
+    The following environment variables are recognized.
+    [
+    {ENVVARS} ]
+    """.format(ENVVARS=environment_variables)
+
+    default_description = """
+    This program creates preview cards from movie files and creates a database of the video metadata.
+    It can also create an MD5 fingerprint for each file.
     """
 
-# Get any Environment variables and use them if present
 
-    cli_args = getenviron('MKP')
+    # Receive variables from main program
+    # Environment Variables trump program variables.
 
-# Test if running in docker, if so set defaults and run based on that information
-    DOCKER=runningInDocker()
-    if DOCKER:
-        output_default = '/data'
-        input_default = '/videos'
-    else:
-        input_default = None
-        output_default = os.getcwd()
+    debug = kwargs.get('debug',program_variables['MKP_DEBUG'])
+    verbose = kwargs.get('verbose',program_variables['MKP_VERBOSE'])
+    quiet = kwargs.get('quiet',program_variables['MKP_QUIET'])
+    dryrun = kwargs.get('dryrun',program_variables['MKP_DRYRUN'])
+    docker = kwargs.get('docker',False)
 
-# Defaults for all programs
+    program = kwargs.get('program','cli function')
+    version = kwargs.get('version','unknown')
+    description = kwargs.get('description',default_description)
+    epilog = kwargs.get('epilog',default_epilog)
+
+
+
+    if program_variables['MKP_DEBUG']:
+        print('Program Variables')
+        for k,v in program_variables.items():
+            print('{0} -> {1}'.format(k,v))
+
+
+
+    parser = argparse.ArgumentParser()
+    parser.prog = program
+    parser.description = description
+    parser.epilog = epilog
+
+    # Defaults for all programs
     parser.add_argument('--version',
                         action='version',
-                        version='%(prog)s ' + __version__)
+                        version='%(prog)s ' + version)
 
     # For different kinds of output, provide a choice
 
@@ -373,7 +459,7 @@ def getCLIparams(cli_args):
                         action='store_true',
                         required=False,
                         dest='verbose',
-                        default=VERBOSE
+                        default=program_variables['MKP_VERBOSE']
                         )
 
     parser.add_argument('-dr', '--dryrun',
@@ -381,7 +467,7 @@ def getCLIparams(cli_args):
                         action='store_true',
                         required=False,
                         dest='dryrun',
-                        default=False
+                        default=program_variables['MKP_DRYRUN']
                         )
 
     parser.add_argument('-d', '--debug',
@@ -389,7 +475,7 @@ def getCLIparams(cli_args):
                         action='store_true',
                         required=False,
                         dest='debug',
-                        default=DEBUG
+                        default=program_variables['MKP_DEBUG']
                         )
 
     parser.add_argument('-q', '--quiet',
@@ -397,7 +483,7 @@ def getCLIparams(cli_args):
                         action='store_true',
                         required=False,
                         dest='quiet',
-                        default=DEBUG
+                        default=program_variables['MKP_QUIET']
                         )
 
     parser.add_argument('-w', '--tile-width',
@@ -406,7 +492,7 @@ def getCLIparams(cli_args):
                         action='store',
                         required=False,
                         dest='tile_width',
-                        default='320'
+                        default=program_variables['MKP_TILE_WIDTH']
                         )
 
     parser.add_argument('-r', '--tile-rows',
@@ -415,7 +501,7 @@ def getCLIparams(cli_args):
                         type=int,
                         required=False,
                         dest='tile_rows',
-                        default='6'
+                        default=program_variables['MKP_TILE_ROWS']
                         )
 
     parser.add_argument('-c', '--tile-cols',
@@ -424,23 +510,23 @@ def getCLIparams(cli_args):
                         type=int,
                         required=False,
                         dest='tile_cols',
-                        default='5'
+                        default=program_variables['MKP_TILE_COLS']
                         )
 
-    parser.add_argument('-b', '--tile-background',
+    parser.add_argument('-b', '--background',
                         help='Tile Background Color',
                         action='store',
                         required=False,
                         dest='tile_bk_color',
-                        default='black'
+                        default=program_variables['MKP_BACKGROUND']
                         )
 
-    parser.add_argument('-p', '--tile-foreground',
+    parser.add_argument('-p', '--foreground',
                         help='Tile Pen Color',
                         action='store',
                         required=False,
                         dest='tile_fg_color',
-                        default='white'
+                        default=program_variables['MKP_FOREGROUND']
                         )
 
     parser.add_argument('-fs', '--font-size',
@@ -448,7 +534,7 @@ def getCLIparams(cli_args):
                         action='store',
                         required=False,
                         dest='font_size',
-                        default='24'
+                        default=program_variables['MKP_FONT_SIZE']
                         )
 
     parser.add_argument('-i', '--input',
@@ -457,7 +543,7 @@ def getCLIparams(cli_args):
                         action='store',
                         required=False,
                         dest='in_file',
-                        default=input_default
+                        default=program_variables['MKP_INPUT']
                         )
 
 
@@ -467,24 +553,24 @@ def getCLIparams(cli_args):
                         action='store',
                         required=False,
                         dest='out_dir',
-                        default=output_default
+                        default=program_variables['MKP_OUTPUT_DIR']
                         )
 
     parser.add_argument('-m', '--md5',
                         help='Add the MD5 of the file to the filename',
                         action='store_true',
                         required=False,
-                        dest='md5file',
-                        default=False
+                        dest='md5',
+                        default=program_variables['MKP_MD5']
                         )
 
-    parser.add_argument('-s', '--store-db-file',
+    parser.add_argument('-s', '--db-file',
                         help='Store the video information in  SQLI3te file',
                         type=str,
                         action='store',
                         required=False,
                         dest='dbfile',
-                        default=os.getcwd()
+                        default=program_variables['MKP_DATABASE']
                         )
 
     parser.add_argument('-create-new-db',
@@ -492,7 +578,14 @@ def getCLIparams(cli_args):
                         action='store_true',
                         required=False,
                         dest='create_newdb',
-                        default=False
+                        default=program_variables['MKP_CREATEDB']
+                        )
+    parser.add_argument('-backup-db',
+                        help='Create a new database file',
+                        action='store_true',
+                        required=False,
+                        dest='backup_db',
+                        default=program_variables['MKP_BACKUPDB']
                         )
 
     parser.add_argument('-override',
@@ -516,7 +609,7 @@ def getCLIparams(cli_args):
                         action='store',
                         required=False,
                         dest='studio_id',
-                        default=None
+                        default=program_variables['MKP_STUDIOID']
                         )
 
     parser.add_argument('-part-id',
@@ -524,7 +617,7 @@ def getCLIparams(cli_args):
                         type=str,
                         action='store',
                         required=False,
-                        dest='part_id'
+                        dest=program_variables['MKP_STUDIOID']
                         )
 
     parser.add_argument('-hwaccel',
@@ -533,19 +626,26 @@ def getCLIparams(cli_args):
                         choices=['cuda', 'videotoolbox'],
                         required=False,
                         dest='hwaccel',
-                        default=None
+                        default=program_variables['MKP_HWACCEL']
                         )
-    if len(sys.argv)==1:
+
+    parse_out = parser.parse_args()
+
+    # Minimum requirements to return are INPUT/OUTPUT Dir or --Colors to display colors.
+
+    # Make sure we have the minimum number of arguments to process:
+    if (not parse_out.in_file and not parse_out.out_dir) and not parse_out.colors:
+        print('At a minimum please provide an input file or directory and and output directory')
+        if parse_out.debug:
+            print ('Parser Variables {}'.format(parse_out))
         parser.print_help(sys.stderr)
         sys.exit(1)
-    parse_out = parser.parse_args(cli_args)
-
 
     return parse_out
 
 
 def main():
-    CONFIG = getCLIparams(None)
+    CONFIG = cli(version=__version__,program=__prog_name__)
     setup(CONFIG)
 
     myDB.connect()
@@ -562,11 +662,11 @@ def main():
 
         if not SUCCESS: return 1
 
-        if CONFIG.md5file and not DRYRUN:
+        if CONFIG.md5 and not DRYRUN:
             md5value = md5Checksum(video)
             banner_info['md5'] = md5value
             if not QUIET: print('MD5 calculated as {}'.format(md5value))
-        elif CONFIG.md5file:
+        elif CONFIG.md5:
             banner_info['md5'] = "13227ada4af540092b7c5821c9ff321a"
             md5value = randomString(stringLength=32)
             banner_info['md5'] = md5value
@@ -584,7 +684,7 @@ def main():
 
         output_filename = CONFIG.out_dir + "/"
 
-        if CONFIG.md5file:
+        if CONFIG.md5:
             output_filename += str(md5value) + "_"
 
         output_filename += os.path.basename(video).split('.')[0]
