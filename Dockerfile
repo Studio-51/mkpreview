@@ -4,7 +4,7 @@ USER root
 
 LABEL Description="Production Container for creating preview Images and Database."
 LABEL License="GNU Public License 3.0"
-LABEL Usage="docker run -d  -v [DOCUMENT ROOT]:/data  cbitterfield/mkpreview"
+LABEL Usage="docker run -d  -v [database volume]:/data  cbitterfield/mkpreview"
 LABEL Version="1.0"
 LABEL maintainer="Colin Bitterfield <colin@bitterfield.com>"
 LABEL Author="Colin Bitterfield <colin@bitterfield.com>"
@@ -28,17 +28,28 @@ RUN apt-get upgrade -y
 RUN apt-get install -y zip unzip
 RUN apt install debconf-utils sudo -y
 RUN apt-get install git nano tree vim curl ftp ssh  -y
+RUN apt-get install libmagickwand-dev imagemagick ffmpeg -y
 
+# Add python3
+RUN apt-get install python3 python3-pip -y
+RUN echo  "alias python='python3'" >> ~/.bashrc
+RUN echo  "alias pip='pip3'" >> ~/.bashrc
+
+RUN mkdir /data
+RUN mkdir /videos
 
 # TODO: update this libraries
-RUN pip install wheel==0.32.1 \
-	watchdog==0.9.0
+RUN pip3 install wheel==0.32.1 \
+	watchdog==0.9.0 \
+	pillow==6.2.1 \
+    wand==0.5.7 \
+    ffmpeg-python==0.2.0 \
+    twine==1.13.0 \
+    mkpreview
 
-ADD . /mkpreview
+
+
 WORKDIR /mkpreview
 VOLUME /data
 
-# Install app dependencies
-RUN make install
-
-ENTRYPOINT ["mkpreview"]
+ENTRYPOINT ["/bin/bash"]

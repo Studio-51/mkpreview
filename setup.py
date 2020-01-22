@@ -52,7 +52,7 @@ setup(
     long_description=read('README.rst') + '\n\n' + read('CHANGELOG.rst'),
     keywords='',
     packages=find_packages(include=[PACKAGE_NAME], exclude='tests'),
-    entry_points={
+    entrymake _points={
         'console_scripts': [
             'mkpreview = mkpreview.mkpreview:main'
         ]

@@ -55,6 +55,7 @@ QUIET = None
 myDB = None
 VIDEOS = None
 HWACCEL = None
+DOCKER = False
 
 
 # Global Variables # set defaults here.
@@ -69,6 +70,56 @@ FFPROBE = ""
 
 
 ## Functions
+def getenviron(prefix, **kwargs):
+    '''
+    Get a list of environment variables and return a list for ARG Parsing overrides
+
+
+
+    '''
+    return_list = list()
+    key=""
+    value=""
+
+    # KWARGS is a translation table KEY=Envionment Variable, Value is return key
+    # If set scan for this list, if not use a prefix. If prefix is set, variables are limited to the prefix
+    for evar in os.environ:
+        if prefix or evar in kwargs.keys():
+            value = os.environ.get(evar)
+            # Something we can work with
+            if kwargs and not prefix:
+                print('Kargs Only',evar)
+                key=kwargs.get(evar,None)
+                print(key,value)
+
+            elif evar.startswith(prefix) and not kwargs:
+                key="--" + evar.replace(prefix,'').replace('_','-').lower()
+
+            elif evar.startswith(prefix) and kwargs:
+                key = kwargs[evar.replace(prefix,'')]
+
+            if key:
+                return_list.append(key)
+                if value != 'True' and value != 'False' and value != 'None':
+                    return_list.append(value)
+
+        else:
+            # ENV var we don't need
+            pass
+
+
+    return return_list
+
+def runningInDocker():
+    with open('/proc/self/cgroup', 'r') as procfile:
+        for line in procfile:
+            fields = line.strip().split('/')
+            if 'docker' in fields:
+                return True
+
+    return False
+
+
 def randomString(stringLength=10):
     """Generate a random string of fixed length """
     letters = string.hexdigits
@@ -286,6 +337,7 @@ def setup(configuration):
 
 
 def getCLIparams(cli_args):
+    global DOCKER
     if DEBUG:
         print('CLI Params {0}'.format(cli_args))
     parser = argparse.ArgumentParser(None)
@@ -295,6 +347,18 @@ def getCLIparams(cli_args):
     If the part_id and md5 are unset the filename will be the original base name.png
     """
 
+# Get any Environment variables and use them if present
+
+    cli_args = getenviron('MKP')
+
+# Test if running in docker, if so set defaults and run based on that information
+    DOCKER=runningInDocker()
+    if DOCKER:
+        output_default = '/data'
+        input_default = '/videos'
+    else:
+        input_default = None
+        output_default = os.getcwd()
 
 # Defaults for all programs
     parser.add_argument('--version',
@@ -391,7 +455,8 @@ def getCLIparams(cli_args):
                         type=str,
                         action='store',
                         required=False,
-                        dest='in_file'
+                        dest='in_file',
+                        default=input_default
                         )
 
 
@@ -401,7 +466,7 @@ def getCLIparams(cli_args):
                         action='store',
                         required=False,
                         dest='out_dir',
-                        default=os.getcwd()
+                        default=output_default
                         )
 
     parser.add_argument('-m', '--md5',

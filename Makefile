@@ -99,7 +99,7 @@ install: clean ## install the package to the active Python's site-packages
 uninstall: clean ## uninstall the package to the active Python's site-packages
 	pip uninstall -y mkpreview
 
-boostrap: ## install virtualenv
+bootstrap: ## install virtualenv
 	apt-get install libxml2-dev
 	apt-get install libxslt1-dev
 	apt-get install python-pip

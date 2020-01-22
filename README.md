@@ -53,6 +53,20 @@ optional arguments:
 
 The filename of the output will be the part_id-md5-originalBaseName.png. If
 the part_id and md5 are unset the filename will be the original base name.png
+
+Environment Variables:
+----------------------
+MKP_DEBUG - Debugging on/off
+MKP_TILE_WIDTH
+MKP_TILE_ROWS
+MKP_TILE_COLS
+MKP_TILE_BK_COLOR
+MKP_TILE_FG_COLOR
+MKP_IN_FILE
+MKP_OUT_DIR
+MKP_MD5
+MKP_DBFILE
+MKP_CREATEDB
 ```
 
 ### Example 1:
