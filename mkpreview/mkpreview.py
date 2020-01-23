@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 # Library Imports
-#
-# Get Package version
-
 import argparse
 # Required
 import os
@@ -15,10 +11,6 @@ from datetime import datetime
 from mkpreview.config import *
 from mkpreview.version import __version__
 from mkpreview.database import Database
-
-# Add this module's location to syspath
-sys.path.insert(0, os.getcwd())
-
 # Program Specific library imports
 import ffmpeg
 from wand.color import Color
@@ -26,12 +18,11 @@ from wand.drawing import Drawing
 from wand.image import Image
 from wand.display import display as Display
 import hashlib
-
-
 import random
 import string
 
-
+# Add this module's location to syspath
+sys.path.insert(0, os.getcwd())
 
 __author__ = 'Colin Bitterfield'
 __email__ = 'colin@bitterfield.com'
@@ -57,7 +48,6 @@ VIDEOS = None
 HWACCEL = None
 DOCKER = False
 
-
 # Global Variables # set defaults here.
 if DEBUG:
     tmp = globals().copy()
@@ -68,8 +58,7 @@ FFMPEG = ""
 FFPROBE = ""
 
 
-
-## Functions
+# ---- Functions ----
 def getenviron(prefix, **kwargs):
     '''
     Get a list of environment variables and return a list for ARG Parsing overrides
@@ -79,26 +68,25 @@ def getenviron(prefix, **kwargs):
     '''
     return_list = list()
 
-
     # KWARGS is a translation table KEY=Envionment Variable, Value is return key
     # If set scan for this list, if not use a prefix. If prefix is set, variables are limited to the prefix
     for evar in os.environ:
-        key=""
-        value=""
+        key = ""
+        value = ""
         if prefix in evar or evar in kwargs.keys():
-            if DEBUG: print('EVAL ENV: {0} {1}'.format(evar,os.environ.get(evar)))
+            if DEBUG: print('EVAL ENV: {0} {1}'.format(evar, os.environ.get(evar)))
             value = os.environ.get(evar)
             # Something we can work with
             if kwargs and not prefix:
-                print('Kargs Only',evar)
-                key=kwargs.get(evar,None)
-                print(key,value)
+                print('Kargs Only', evar)
+                key = kwargs.get(evar, None)
+                print(key, value)
 
             elif evar.startswith(prefix) and not kwargs:
-                key="--" + evar.replace(prefix,'').replace('_','-').lower()
+                key = "--" + evar.replace(prefix, '').replace('_', '-').lower()
 
             elif evar.startswith(prefix) and kwargs:
-                key = kwargs[evar.replace(prefix,'')]
+                key = kwargs[evar.replace(prefix, '')]
 
             if key:
                 return_list.append(key)
@@ -109,8 +97,8 @@ def getenviron(prefix, **kwargs):
             # ENV var we don't need
             pass
 
-
     return return_list
+
 
 def runningInDocker():
     if not os.path.isfile('/proc/self/cgroup'): return False
@@ -141,7 +129,6 @@ def md5Checksum(filename):
             m.update(data)
 
         return m.hexdigest()
-
 
 
 def video_info(**kwargs):
@@ -178,9 +165,8 @@ def video_info(**kwargs):
     MAX_PARAMS = 1
     SUCCESS = True
 
-    filename=kwargs.get('filename',None)
+    filename = kwargs.get('filename', None)
     local_info = dict()
-
 
     # Check for requirement parameters
     if DEBUG:
@@ -206,10 +192,10 @@ def video_info(**kwargs):
         # Get Video Information
         probe_args = {'pretty': None,
                       'select_streams': 'v:0',
-                      'show_entries': "stream=bit_rate,height,width,codec_long_name,display_aspect_ratio,avg_frame_rate,bit_rate,max_bit_rate,nb_frames : stream_tags= : stream_disposition= :format=duration,size :format_tags= "
+                      'show_entries': "stream=bit_rate,height,width,codec_long_name,display_aspect_ratio, avg_frame_rate,bit_rate,max_bit_rate,nb_frames : stream_tags= : stream_disposition= :format=duration,size :format_tags= "
 
                       }
-        if DEBUG: print("Get Info FFPROBE={0} arguments {1}".format(FFPROBE,probe_args))
+        if DEBUG: print("Get Info FFPROBE={0} arguments {1}".format(FFPROBE, probe_args))
         info = ffmpeg.probe(filename, cmd=FFPROBE, **probe_args)
         if DEBUG: print(info)
         local_info['codec_long_name'] = info['streams'][0]['codec_long_name']
@@ -231,6 +217,7 @@ def video_info(**kwargs):
         return SUCCESS, {'status', 'fail'}
 
     # End Program Functions and Classes
+
 
 # Setup Function for the application
 
@@ -256,10 +243,6 @@ def setup(configuration):
     DRYRUN = configuration.dryrun if configuration.dryrun else DRYRUN
     QUIET = configuration.quiet if configuration.quiet else QUIET
 
-
-
-
-
     # Do some quick testing on colors.
 
     if configuration.colors:
@@ -274,33 +257,33 @@ def setup(configuration):
         print('Configuration: {}'.format(configuration))
         sys.exit(1)
 
-
     if not configuration.dbfile or configuration.create_newdb:
         if configuration.dbfile:
-            myDB = Database(configuration.dbfile,quiet=configuration.quiet,debug=configuration.debug)
+            myDB = Database(configuration.dbfile, quiet=configuration.quiet, debug=configuration.debug)
         else:
             myDB = Database(os.getcwd() + "/mkpreview.db")
 
         if DEBUG: print('Database {} created'.format(configuration.dbfile))
         # Create New database file
-        myDB.create(overwrite=False,backup=configuration.backup_db)
+        myDB.create(overwrite=False, backup=configuration.backup_db)
         myDB.connect()
         if configuration.md5:
-            myDB.createTable(table='preview',overwrite=False,fields=TABLE['preview'],unique=(['filename','md5']))
+            myDB.create_table(table='preview', overwrite=False, fields=TABLE['preview'], unique=(['filename', 'md5']))
         else:
-            myDB.createTable(table='preview',overwrite=False,fields=TABLE['preview'],unique=(['filename']))
+            myDB.create_table(table='preview', overwrite=False, fields=TABLE['preview'], unique=(['filename']))
         myDB.close()
     else:
         # Make sure we have a table
         myDB = Database(configuration.dbfile)
         myDB.connect()
-        if not myDB.isTable(table='preview'):
+        if not myDB.istable(table='preview'):
             if configuration.md5:
-                myDB.createTable(table='preview',overwrite=False,fields=TABLE['preview'],unique=(['filename','md5']))
+                myDB.create_table(table='preview', overwrite=False, fields=TABLE['preview'],
+                                  unique=(['filename', 'md5']))
             else:
-                myDB.createTable(table='preview',overwrite=False,fields=TABLE['preview'],unique=(['filename']))
+                myDB.create_table(table='preview', overwrite=False, fields=TABLE['preview'], unique=(['filename']))
         # Enable Multiuser and performance setting
-        myDB.sqlExecute("""PRAGMA journal_mode=WAL;""")
+        myDB.sql_exec("""PRAGMA journal_mode=WAL;""")
         myDB.close()
 
     VIDEOS = list()
@@ -328,8 +311,7 @@ def setup(configuration):
         if os.path.isfile(FFMPEG) and os.path.isfile(FFPROBE):
             return
 
-    if DEBUG: print('FFMPEG Binaries located: {0} {1}'.format(FFPROBE,FFMPEG))
-
+    if DEBUG: print('FFMPEG Binaries located: {0} {1}'.format(FFPROBE, FFMPEG))
 
     # Set HWAccels
     if configuration.hwaccel == 'cuda':
@@ -347,10 +329,6 @@ def setup(configuration):
     # Apply the following to all when possible
     #
     # def function(**kwargs)
-
-
-
-
 
 
 def cli(**kwargs):
@@ -376,25 +354,25 @@ def cli(**kwargs):
     # Get any Environment variables and use them if present
     # Define variables being looked for, and their default values if not found
     program_variables = {
-        'MKP_DEBUG'       : False,
-        'MKP_VERBOSE'     : False,
-        'MKP_QUIET'       : False,
-        'MKP_DRYRUN'      : False,
-        'MKP_TILE_WIDTH'  : 320,
-        'MKP_TILE_ROWS'   : 6,
-        'MKP_TILE_COLS'   : 5,
-        'MKP_BACKGROUND'  : 'Black',
-        'MKP_FOREGROUND'  : 'White',
-        'MKP_FONT_SIZE'   : 20,
-        'MKP_INPUT'       : None,
-        'MKP_OUTPUT_DIR'  : None,
-        'MKP_DATABASE'    : None,
-        'MKP_CREATEDB'    : None,
-        'MKP_BACKUPDB'    : None,
-        'MKP_MD5'         : False,
-        'MKP_STUDIOID'    : None,
-        'MKP_PARTID'      : None,
-        'MKP_HWACCEL'     : None
+        'MKP_DEBUG': False,
+        'MKP_VERBOSE': False,
+        'MKP_QUIET': False,
+        'MKP_DRYRUN': False,
+        'MKP_TILE_WIDTH': 320,
+        'MKP_TILE_ROWS': 6,
+        'MKP_TILE_COLS': 5,
+        'MKP_BACKGROUND': 'Black',
+        'MKP_FOREGROUND': 'White',
+        'MKP_FONT_SIZE': 20,
+        'MKP_INPUT': None,
+        'MKP_OUTPUT_DIR': None,
+        'MKP_DATABASE': None,
+        'MKP_CREATEDB': None,
+        'MKP_BACKUPDB': None,
+        'MKP_MD5': False,
+        'MKP_STUDIOID': None,
+        'MKP_PARTID': None,
+        'MKP_HWACCEL': None
     }
 
     environment_variables = ", ".join(program_variables.keys())
@@ -403,7 +381,7 @@ def cli(**kwargs):
 
     for myvar in os.environ:
         if myvar in program_variables.keys():
-            program_variables[myvar] = os.environ.get(myvar,program_variables[myvar])
+            program_variables[myvar] = os.environ.get(myvar, program_variables[myvar])
 
     # Set a default parse description and epilog. Can be overwritten by program if this is called as a function
     default_epilog = """The filename of the output will be the part_id-md5-originalBaseName.png.
@@ -418,29 +396,24 @@ def cli(**kwargs):
     It can also create an MD5 fingerprint for each file.
     """
 
-
     # Receive variables from main program
     # Environment Variables trump program variables.
 
-    debug = kwargs.get('debug',program_variables['MKP_DEBUG'])
-    verbose = kwargs.get('verbose',program_variables['MKP_VERBOSE'])
-    quiet = kwargs.get('quiet',program_variables['MKP_QUIET'])
-    dryrun = kwargs.get('dryrun',program_variables['MKP_DRYRUN'])
-    docker = kwargs.get('docker',False)
+    debug = kwargs.get('debug', program_variables['MKP_DEBUG'])
+    verbose = kwargs.get('verbose', program_variables['MKP_VERBOSE'])
+    quiet = kwargs.get('quiet', program_variables['MKP_QUIET'])
+    dryrun = kwargs.get('dryrun', program_variables['MKP_DRYRUN'])
+    docker = kwargs.get('docker', False)
 
-    program = kwargs.get('program','cli function')
-    version = kwargs.get('version','unknown')
-    description = kwargs.get('description',default_description)
-    epilog = kwargs.get('epilog',default_epilog)
-
-
+    program = kwargs.get('program', 'cli function')
+    version = kwargs.get('version', 'unknown')
+    description = kwargs.get('description', default_description)
+    epilog = kwargs.get('epilog', default_epilog)
 
     if program_variables['MKP_DEBUG']:
         print('Program Variables')
-        for k,v in program_variables.items():
-            print('{0} -> {1}'.format(k,v))
-
-
+        for k, v in program_variables.items():
+            print('{0} -> {1}'.format(k, v))
 
     parser = argparse.ArgumentParser()
     parser.prog = program
@@ -546,7 +519,6 @@ def cli(**kwargs):
                         default=program_variables['MKP_INPUT']
                         )
 
-
     parser.add_argument('-o', '--output-dir',
                         help='Where to put the finished files',
                         type=str,
@@ -637,7 +609,7 @@ def cli(**kwargs):
     if (not parse_out.in_file and not parse_out.out_dir) and not parse_out.colors:
         print('At a minimum please provide an input file or directory and and output directory')
         if parse_out.debug:
-            print ('Parser Variables {}'.format(parse_out))
+            print('Parser Variables {}'.format(parse_out))
         parser.print_help(sys.stderr)
         sys.exit(1)
 
@@ -645,7 +617,7 @@ def cli(**kwargs):
 
 
 def main():
-    CONFIG = cli(version=__version__,program=__prog_name__)
+    CONFIG = cli(version=__version__, program=__prog_name__)
     setup(CONFIG)
 
     myDB.connect()
@@ -711,7 +683,7 @@ def main():
 
         # Setup Preview Filters
         filter_select = {
-                    'filter_name' : 'select',
+            'filter_name': 'select',
             'expr': tile_expr
         }
         filter_scale = {
@@ -775,13 +747,13 @@ def main():
 
             img.save(filename=output_filename + '.tmp.jpg')
 
-        if DEBUG: print('Image Border width {0} and height {1}'.format(border_width,border_height))
+        if DEBUG: print('Image Border width {0} and height {1}'.format(border_width, border_height))
 
         # Create Banner Image
         if CONFIG.part_id:
-            message="Part Number: {EDGEID}\n".format(EDGEID=banner_info['part_id'])
+            message = "Part Number: {EDGEID}\n".format(EDGEID=banner_info['part_id'])
         else:
-            message=""
+            message = ""
         message += """{MP4NAME}
         {video_width} x {video_height} format {ASPECT}
         codec {codec_long_name}
@@ -808,7 +780,7 @@ def main():
             draw.fill_color = Color(CONFIG.tile_fg_color)
             with Image(filename=output_filename + '.tmp.jpg') as img:
                 draw.draw(img)
-                img.annotate(message, draw, 30, int(CONFIG.font_size)+10)
+                img.annotate(message, draw, 30, int(CONFIG.font_size) + 10)
                 img.save(filename=output_filename + '.jpg')
 
         os.remove(output_filename + '.tmp.jpg')
@@ -826,11 +798,10 @@ def main():
     return 0
 
 
-
 if __name__ == "__main__":
 
     if DEBUG:
         myglobals = globals().copy()
-        for k,v in myglobals.items():
-            print('Key {0} Value {1}'.format(k,v))
+        for k, v in myglobals.items():
+            print('Key {0} Value {1}'.format(k, v))
     main()
