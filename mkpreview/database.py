@@ -7,7 +7,7 @@ import sys
 import time
 from shutil import copyfile
 from sqlite3 import Error
-from time import time
+
 
 # Globals
 DEBUG = False
