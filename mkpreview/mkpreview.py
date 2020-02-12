@@ -671,7 +671,7 @@ def main():
         output_filename = config.out_dir + "/"
 
         if config.md5:
-            output_filename += str(md5) + "_"
+            output_filename += str(md5value) + "_"
 
         output_filename += os.path.basename(video).split('.')[0]
 
