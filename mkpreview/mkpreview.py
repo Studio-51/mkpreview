@@ -60,21 +60,22 @@ FFPROBE = ""
 
 # ---- Functions ----
 def getenviron(prefix, **kwargs):
-    '''
+    """
     Get a list of environment variables and return a list for ARG Parsing overrides
 
 
 
-    '''
+    """
     return_list = list()
 
     # KWARGS is a translation table KEY=Envionment Variable, Value is return key
     # If set scan for this list, if not use a prefix. If prefix is set, variables are limited to the prefix
     for evar in os.environ:
-        key = ""
-        value = ""
+        key = str()
+        value = str()
         if prefix in evar or evar in kwargs.keys():
-            if DEBUG: print('EVAL ENV: {0} {1}'.format(evar, os.environ.get(evar)))
+            if DEBUG:
+                print('EVAL ENV: {0} {1}'.format(evar, os.environ.get(evar)))
             value = os.environ.get(evar)
             # Something we can work with
             if kwargs and not prefix:
@@ -100,8 +101,9 @@ def getenviron(prefix, **kwargs):
     return return_list
 
 
-def runningInDocker():
-    if not os.path.isfile('/proc/self/cgroup'): return False
+def isdocker():
+    if not os.path.isfile('/proc/self/cgroup'):
+        return False
     with open('/proc/self/cgroup', 'r') as procfile:
         for line in procfile:
             fields = line.strip().split('/')
@@ -111,15 +113,15 @@ def runningInDocker():
     return False
 
 
-def randomString(stringLength=10):
+def random_string(stringlength=10):
     """Generate a random string of fixed length """
     letters = string.hexdigits
     letters = letters.lower()
     numbers = string.digits
-    return ''.join(random.choice(letters + numbers) for i in range(stringLength))
+    return ''.join(random.choice(letters + numbers) for i in range(stringlength))
 
 
-def md5Checksum(filename):
+def md5(filename):
     with open(filename, 'rb') as fh:
         m = hashlib.md5()
         while True:
@@ -161,43 +163,46 @@ def video_info(**kwargs):
     global DEBUG
     global FFPROBE
 
-    REQUIRED = list(['filename'])
-    MAX_PARAMS = 1
-    SUCCESS = True
+    required = list(['filename'])
+    max_params = 1
+    success = True
 
     filename = kwargs.get('filename', None)
     local_info = dict()
 
     # Check for requirement parameters
     if DEBUG:
-        print(REQUIRED, len(REQUIRED))
+        print(required, len(required))
     if DEBUG:
         print(kwargs, len(kwargs))
-    if len(REQUIRED) <= len(kwargs) <= MAX_PARAMS:
-        for required in REQUIRED:
+    if len(required) <= len(kwargs) <= max_params:
+        for required in required:
             if required not in kwargs:
-                SUCCESS = False
+                success = False
                 raise Exception("The parameter {0} is required".format(required))
 
     else:
-        SUCCESS = False
-        raise Exception('parameters required {0} parameters received {1}'.format(len(REQUIRED), len(kwargs)))
+        success = False
+        raise Exception('parameters required {0} parameters received {1}'.format(len(required), len(kwargs)))
 
     if DEBUG:
-        print('Success Flag, {0}, arguments {1}'.format(SUCCESS, kwargs))
+        print('Success Flag, {0}, arguments {1}'.format(success, kwargs))
     # Code to execute here
     # Test Filename
-    if not os.path.isfile(filename): SUCCESS = False
-    if SUCCESS:
+    if not os.path.isfile(filename):
+        success = False
+    if success:
         # Get Video Information
         probe_args = {'pretty': None,
                       'select_streams': 'v:0',
                       'show_entries': "stream=bit_rate,height,width,codec_long_name,display_aspect_ratio, avg_frame_rate,bit_rate,max_bit_rate,nb_frames : stream_tags= : stream_disposition= :format=duration,size :format_tags= "
 
                       }
-        if DEBUG: print("Get Info FFPROBE={0} arguments {1}".format(FFPROBE, probe_args))
+        if DEBUG:
+            print("Get Info FFPROBE={0} arguments {1}".format(FFPROBE, probe_args))
         info = ffmpeg.probe(filename, cmd=FFPROBE, **probe_args)
-        if DEBUG: print(info)
+        if DEBUG:
+            print(info)
         local_info['codec_long_name'] = info['streams'][0]['codec_long_name']
         local_info['video_width'] = info['streams'][0]['width']
         local_info['video_height'] = info['streams'][0]['height']
@@ -210,11 +215,11 @@ def video_info(**kwargs):
         local_info['video_duration'] = info['format']['duration']
         local_info['video_size'] = info['format']['size']
 
-        return SUCCESS, local_info
+        return success, local_info
 
     else:
 
-        return SUCCESS, {'status', 'fail'}
+        return success, {'status', 'fail'}
 
     # End Program Functions and Classes
 
@@ -263,7 +268,8 @@ def setup(configuration):
         else:
             myDB = Database(os.getcwd() + "/mkpreview.db")
 
-        if DEBUG: print('Database {} created'.format(configuration.dbfile))
+        if DEBUG:
+            print('Database {} created'.format(configuration.dbfile))
         # Create New database file
         myDB.create(overwrite=False, backup=configuration.backup_db)
         myDB.connect()
@@ -301,17 +307,20 @@ def setup(configuration):
     else:
         print('No Valid Input presented {}'.format(configuration.in_file))
 
-    if DEBUG: print(VIDEOS)
+    if DEBUG:
+        print(VIDEOS)
 
     # Find and define FFMPEG Tools.
-    if not FFLOCATIONS: FFLOCATIONS = ['/usr/local/bin']
+    if not FFLOCATIONS:
+        FFLOCATIONS = ['/usr/local/bin']
     for FF in FFLOCATIONS:
         FFMPEG = os.path.join(FF, 'ffmpeg')
         FFPROBE = os.path.join(FF, 'ffprobe')
         if os.path.isfile(FFMPEG) and os.path.isfile(FFPROBE):
             return
 
-    if DEBUG: print('FFMPEG Binaries located: {0} {1}'.format(FFPROBE, FFMPEG))
+    if DEBUG:
+        print('FFMPEG Binaries located: {0} {1}'.format(FFPROBE, FFMPEG))
 
     # Set HWAccels
     if configuration.hwaccel == 'cuda':
@@ -617,65 +626,72 @@ def cli(**kwargs):
 
 
 def main():
-    CONFIG = cli(version=__version__, program=__prog_name__)
-    setup(CONFIG)
+    config = cli(version=__version__, program=__prog_name__)
+    setup(config)
 
     myDB.connect()
     for video in VIDEOS:
         banner_info = dict()
 
-        if not QUIET: print('Processing File {file}'.format(file=video))
-        if not QUIET: print('Preview is {rows} rows x {cols} cols @ {width} width px'.format(rows=CONFIG.tile_rows,
-                                                                                             cols=CONFIG.tile_cols,
-                                                                                             width=CONFIG.tile_width))
-        if not QUIET: print('Background Color is set to {color}'.format(color=CONFIG.tile_bk_color))
+        if not QUIET:
+            print('Processing File {file}'.format(file=video))
+        if not QUIET:
+            print('Preview is {rows} rows x {cols} cols @ {width} width px'.format(rows=config.tile_rows,
+                                                                                   cols=config.tile_cols,
+                                                                                   width=config.tile_width))
+        if not QUIET:
+            print('Background Color is set to {color}'.format(color=config.tile_bk_color))
         print('Video Information for {}'.format(video))
-        SUCCESS, banner_info = video_info(filename=video)
+        success, banner_info = video_info(filename=video)
 
-        if not SUCCESS: return 1
+        if not success:
+            return 1
 
-        if CONFIG.md5 and not DRYRUN:
-            md5value = md5Checksum(video)
+        if config.md5 and not DRYRUN:
+            md5value = md5(video)
             banner_info['md5'] = md5value
-            if not QUIET: print('MD5 calculated as {}'.format(md5value))
-        elif CONFIG.md5:
+            if not QUIET:
+                print('MD5 calculated as {}'.format(md5value))
+        elif config.md5:
             banner_info['md5'] = "13227ada4af540092b7c5821c9ff321a"
-            md5value = randomString(stringLength=32)
+            md5value = random_string(stringlength=32)
             banner_info['md5'] = md5value
 
         banner_info['filename'] = video
         banner_info['basename'] = os.path.basename(video)
         banner_info['dirname'] = os.path.dirname(video)
 
-        if CONFIG.part_id and CONFIG.studio_id:
+        if config.part_id and config.studio_id:
             # Change the filename for display
             num_id = [str(i) for i in list(os.path.basename(banner_info['basename'].rsplit('.', 1)[0])) if i.isdigit()]
-            banner_info['part_id'] = CONFIG.part_id + "".join(num_id)
+            banner_info['part_id'] = config.part_id + "".join(num_id)
         else:
             banner_info['part_id'] = None
 
-        output_filename = CONFIG.out_dir + "/"
+        output_filename = config.out_dir + "/"
 
-        if CONFIG.md5:
-            output_filename += str(md5value) + "_"
+        if config.md5:
+            output_filename += str(md5) + "_"
 
         output_filename += os.path.basename(video).split('.')[0]
 
-        if CONFIG.override:
-            output_filename = CONFIG.out_dir + "/" + CONFIG.override
+        if config.override:
+            output_filename = config.out_dir + "/" + config.override
 
         if banner_info['part_id']:
-            output_filename = CONFIG.out_dir + "/" + banner_info['part_id']
+            output_filename = config.out_dir + "/" + banner_info['part_id']
 
-        if not QUIET and SUCCESS: print('Video Information: {info}'.format(info=banner_info))
-        if not QUIET and SUCCESS: print('Output Filename = {output}'.format(output=output_filename))
+        if not QUIET and success:
+            print('Video Information: {info}'.format(info=banner_info))
+        if not QUIET and success:
+            print('Output Filename = {output}'.format(output=output_filename))
 
         # calculate iables
-        tile_rows = CONFIG.tile_rows
-        tile_cols = CONFIG.tile_cols
+        tile_rows = config.tile_rows
+        tile_cols = config.tile_cols
         num_tiles = tile_rows * tile_cols
-        tile_width = CONFIG.tile_width
-        tile_bk_color = CONFIG.tile_bk_color
+        tile_width = config.tile_width
+        tile_bk_color = config.tile_bk_color
         video_frames = banner_info['video_frames']
         tile_mod = int(int(video_frames) / num_tiles)
         tile_expr = "not(mod(n," + str(tile_mod) + "))"
@@ -700,12 +716,13 @@ def main():
                        }
 
         input_args = {
-            'loglevel': '+panic',
+            'loglevel': 'panic',
             'hide_banner': None,
             'r': '10'
         }
 
-        if HWACCEL: input_args.update(HWACCEL)
+        if config.hwaccel:
+            input_args.update({'hwaccel': HWACCEL[config.hwaccel]})
 
         # Create first image
         if not DRYRUN:
@@ -725,16 +742,17 @@ def main():
 
         else:
             with Image() as blank_img:
-                blank_img.blank(2045, 1155, background=CONFIG.tile_bk_color)
+                blank_img.blank(2045, 1155, background=config.tile_bk_color)
                 blank_img.save(filename=output_filename + '.jpg')
 
         # Get the size of the image
         with Image(filename=output_filename + '.jpg') as img:
-            if DEBUG: print(img.size)
+            if DEBUG:
+                print(img.size)
             image_width, image_height = img.size
             resize_width = int(round(image_width * 1.05))
             border_width = int((resize_width - image_width) / 2 * - 1)
-            resize_height = int(round(image_height * 1.25)) + (3 * int(CONFIG.font_size))
+            resize_height = int(round(image_height * 1.25)) + (3 * int(config.font_size))
             border_height = ((resize_height - image_height) * -1) - border_width
 
             img.background_color = tile_bk_color
@@ -747,10 +765,11 @@ def main():
 
             img.save(filename=output_filename + '.tmp.jpg')
 
-        if DEBUG: print('Image Border width {0} and height {1}'.format(border_width, border_height))
+        if DEBUG:
+            print('Image Border width {0} and height {1}'.format(border_width, border_height))
 
         # Create Banner Image
-        if CONFIG.part_id:
+        if config.part_id:
             message = "Part Number: {EDGEID}\n".format(EDGEID=banner_info['part_id'])
         else:
             message = ""
@@ -769,18 +788,19 @@ def main():
                    video_frame_rate=banner_info['video_frame_rate']
 
                    )
-        if VERBOSE and not QUIET: print(message)
+        if VERBOSE and not QUIET:
+            print(message)
 
         with Drawing() as draw:
-            draw.stroke_color = Color(CONFIG.tile_fg_color)
+            draw.stroke_color = Color(config.tile_fg_color)
             draw.stroke_width = 1
             draw.font = 'helvetica'
-            draw.font_size = int(CONFIG.font_size)
+            draw.font_size = int(config.font_size)
             draw.text_kerning = 2
-            draw.fill_color = Color(CONFIG.tile_fg_color)
+            draw.fill_color = Color(config.tile_fg_color)
             with Image(filename=output_filename + '.tmp.jpg') as img:
                 draw.draw(img)
-                img.annotate(message, draw, 30, int(CONFIG.font_size) + 10)
+                img.annotate(message, draw, 30, int(config.font_size) + 10)
                 img.save(filename=output_filename + '.jpg')
 
         os.remove(output_filename + '.tmp.jpg')

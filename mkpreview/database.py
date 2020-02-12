@@ -250,7 +250,7 @@ class Database:
         table_fields = kwargs.get('fields', None)
         overwrite = kwargs.get('overwrite', False)
         unique_fields = kwargs.get('unique', None)
-        sql_statement = ""
+        sql_statement = None
 
         if not table_name and not table_fields:
             return False, "Error wrong parameters"
