@@ -10,10 +10,13 @@ import time
 from datetime import datetime
 
 
-from mkpreview.config import *
-from mkpreview.version import __version__
-from mkpreview.database import Database
+#from mkpreview.config import *
+#from mkpreview.version import __version__
+#from mkpreview.database import Database
 
+from config import *
+from version import __version__
+from database import Database
 
 #Program Specific library imports
 import ffmpeg
@@ -293,7 +296,7 @@ def setup(configuration):
             else:
                 myDB.create_table(table='preview', overwrite=False, fields=TABLE['preview'], unique=(['filename']))
         # Enable Multiuser and performance setting
-        myDB.sql_exec("""PRAGMA journal_mode=WAL;""")
+        myDB.sql_exec(sql="""PRAGMA journal_mode=WAL;""")
         myDB.close()
 
     VIDEOS = list()
@@ -813,7 +816,7 @@ def main():
             im = Display(output_filename + '.jpg')
             im.show()
 
-        myDB.insertORupdate(table='preview', key_field='filename', key_value=video, data=banner_info)
+        myDB.insert_update(table='preview', key_field='filename', key_value=video, data=banner_info)
         myDB.commit()
     myDB.close()
 
