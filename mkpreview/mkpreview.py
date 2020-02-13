@@ -9,9 +9,7 @@ import sys
 import time
 from datetime import datetime
 
-#from config import *
-#from version import __version__
-#from database import Database
+
 from mkpreview.config import *
 from mkpreview.version import __version__
 from mkpreview.database import Database
