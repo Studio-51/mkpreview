@@ -10,9 +10,9 @@ import time
 from datetime import datetime
 
 
-from .config import *
-from .version import __version__
-from .database import Database
+from config import *
+from version import __version__
+from database import Database
 
 
 
@@ -607,9 +607,9 @@ def cli(**kwargs):
                         )
 
     parser.add_argument('-hwaccel',
-                        help='Enable Hardware acceleration for videotoolbox or cuda',
+                        help='Enable Hardware acceleration for videotoolbox or cuda, vaapi=Radeon',
                         action='store',
-                        choices=['cuda', 'videotoolbox'],
+                        choices=['cuda', 'videotoolbox', 'cuvid', 'vdpau', 'vaapi'],
                         required=False,
                         dest='hwaccel',
                         default=program_variables['MKP_HWACCEL']
@@ -727,7 +727,22 @@ def main():
         }
 
         if config.hwaccel:
-            input_args.update({'hwaccel': HWACCEL[config.hwaccel]})
+            #input_args.update({'hwaccel': HWACCEL[config.hwaccel]})
+            #input_args.update({'hwaccel': 'vaapi'})
+            pass
+
+        if True9u:
+            FFMPEG_CMD = (
+                ffmpeg
+                    .input(video, **input_args)
+                    .filter(**filter_select)
+                    .filter(**filter_scale)
+                    .filter(**filter_tile)
+                    .output(output_filename + '.jpg', vframes=1, format='image2', vcodec='mjpeg', threads=1)
+                    .overwrite_output()
+                    .compile(cmd=FFMPEG)
+            )
+            print("FFMPEG CMD: {cmd}".format(cmd=" ".join(FFMPEG_CMD)))
 
         # Create first image
         if not DRYRUN:
@@ -749,6 +764,8 @@ def main():
             with Image() as blank_img:
                 blank_img.blank(2045, 1155, background=config.tile_bk_color)
                 blank_img.save(filename=output_filename + '.jpg')
+
+
 
         # Get the size of the image
         with Image(filename=output_filename + '.jpg') as img:
