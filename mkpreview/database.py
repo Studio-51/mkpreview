@@ -75,10 +75,14 @@ class Database:
         self.DEBUG = kwargs.get('debug', DEBUG)
         print('Quite? {}'.format(self.QUIET))
         if not self.QUIET:
-            print("{class_name}:{method}:initialized database:{database}".format(method=method,
-                                                                                 class_name=self.class_name,
-                                                                                 database=database))
-
+            print("{class_name}:{method}:initialized database:{database}".format(
+                                                                            method=method,
+                                                                            class_name=self.class_name,
+                                                                            database=database))
+            print("{class_name}:{method}:debug:{debug}".format(
+                                                            method=method,
+                                                            debug=self.DEBUG,
+                                                            class_name=self.class_name,))
     def __enter__(self):
         self.connect()
 
@@ -101,17 +105,19 @@ class Database:
         message = self.database
         flag = True
         if self.DEBUG:
-            print('Class {classname} Method {method} Arguments {args}'.format(classname=self.class_name, method=method,
+            print('{classname}:{method}:arguments:{args}'.format(classname=self.class_name, method=method,
                                                                               args=kwargs))
 
         if not os.path.isfile(self.database):
             flag = False
 
         if self.DEBUG:
-            print("Database file exists {}".format(flag))
+            print('{classname}:{method}:file exists:{file}:{flag}'.format(classname=self.class_name, method=method,
+                                                                 file=self.database,flag=flag))
+
 
         if not self.QUIET:
-            print("Database {}".format(message))
+            print("Database Name {}".format(message))
 
         return flag, message
 
@@ -141,17 +147,18 @@ class Database:
         backup = kwargs.get('backup', True)
 
         if self.DEBUG:
-            print('Class {classname} Method {method} Arguments {args}'.format(classname=self.class_name, method=method,
+            print('{classname}:{method}:arguments:{args}'.format(classname=self.class_name, method=method,
                                                                               args=kwargs))
 
         db_exists = self.name()[0]
 
         if DEBUG and db_exists:
-            print('Database {database} exists'.format(database=self.database))
+            print('classname}:{method}:{database}:exists'.format(classname=self.class_name, method=method,database=self.database))
 
         if backup:
             if DEBUG:
-                print("Database backed up to filename is {}".format(bak_name))
+                print('classname}:{method}:{database}:backed up:{bak_name}'.format(classname=self.class_name, method=method,database=self.database,bak_name=bak_name))
+
 
             dir_name = os.path.dirname(self.database)
             base_name = os.path.basename(self.database)
@@ -193,7 +200,7 @@ class Database:
         method = sys._getframe().f_code.co_name
         flag = True
         if DEBUG:
-            print('Class {classname} Method {method} Arguments {args}'.format(classname=self.class_name, method=method,
+            print('{classname}:{method}:arguments:{args}'.format(classname=self.class_name, method=method,
                                                                               args=kwargs))
 
         try:
