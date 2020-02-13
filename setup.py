@@ -45,7 +45,7 @@ SETUP_REQUIREMENTS = ['pytest-runner==4.2']
 setup(
     python_requires='>=3.5',
     name=PACKAGE_NAME,
-    version='0.5.0',
+    version='0.5.1',
     author='Colin Bitterfield',
     author_email='colin@bitterfield.com',
     description=DESCRIPTION,
