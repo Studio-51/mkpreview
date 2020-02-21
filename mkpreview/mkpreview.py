@@ -858,7 +858,6 @@ def main():
             print('Video information for {video} failed skipping'.format(video=video))
 
     myDB.close()
-
     print('End of Program')
 
     return 0
