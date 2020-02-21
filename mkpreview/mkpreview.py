@@ -64,6 +64,17 @@ FFPROBE = ""
 
 
 # ---- Functions ----
+def checkvideo(filename):
+    isgood = True
+    if not os.path.isfile(filename):
+        isgood = False
+    if not os.path.getsize(filename) > 1:
+        isgood = False
+
+
+    return isgood
+
+
 def getenviron(prefix, **kwargs):
     """
     Get a list of environment variables and return a list for ARG Parsing overrides
@@ -205,22 +216,32 @@ def video_info(**kwargs):
                       }
         if DEBUG:
             print("Get Info FFPROBE={0} arguments {1}".format(FFPROBE, probe_args))
-        info = ffmpeg.probe(filename, cmd=FFPROBE, **probe_args)
-        if DEBUG:
-            print(info)
-        local_info['codec_long_name'] = info['streams'][0]['codec_long_name']
-        local_info['video_width'] = info['streams'][0]['width']
-        local_info['video_height'] = info['streams'][0]['height']
-        local_info['video_aspect'] = info['streams'][0]['display_aspect_ratio'] if "display_aspect_ratio" in \
-                                                                                   info['streams'][0] else None
-        v1, v2 = info['streams'][0]['avg_frame_rate'].split('/')
-        local_info['video_frame_rate'] = str(int(int(v1) / int(v2)))
-        local_info['video_bit_rate'] = info['streams'][0]['bit_rate']
-        local_info['video_frames'] = info['streams'][0]['nb_frames']
-        local_info['video_duration'] = info['format']['duration']
-        local_info['video_size'] = info['format']['size']
 
-        return success, local_info
+        # Get Video Information
+        try:
+            info = ffmpeg.probe(filename, cmd=FFPROBE, **probe_args)
+
+
+
+            if DEBUG:
+                print(info)
+            local_info['codec_long_name'] = info['streams'][0]['codec_long_name']
+            local_info['video_width'] = info['streams'][0]['width']
+            local_info['video_height'] = info['streams'][0]['height']
+            local_info['video_aspect'] = info['streams'][0]['display_aspect_ratio'] if "display_aspect_ratio" in \
+                                                                                       info['streams'][0] else None
+            v1, v2 = info['streams'][0]['avg_frame_rate'].split('/')
+            local_info['video_frame_rate'] = str(int(int(v1) / int(v2)))
+            local_info['video_bit_rate'] = info['streams'][0]['bit_rate']
+            local_info['video_frames'] = info['streams'][0]['nb_frames']
+            local_info['video_duration'] = info['format']['duration']
+            local_info['video_size'] = info['format']['size']
+
+            return success, local_info
+
+        except Exception as error:
+            print('Failure to get video information {filename} with error {error}'.format(filename=filename, error=error))
+            return False, {'status', 'fail'}
 
     else:
 
@@ -728,10 +749,10 @@ def main():
 
         if config.hwaccel:
             #input_args.update({'hwaccel': HWACCEL[config.hwaccel]})
-            #input_args.update({'hwaccel': 'vaapi'})
-            pass
+            input_args.update({'hwaccel': 'auto'})
 
-        if True9u:
+
+        if DEBUG:
             FFMPEG_CMD = (
                 ffmpeg
                     .input(video, **input_args)
