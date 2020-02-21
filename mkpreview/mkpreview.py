@@ -71,7 +71,6 @@ def checkvideo(filename):
     if not os.path.getsize(filename) > 1:
         isgood = False
 
-
     return isgood
 
 
@@ -670,105 +669,90 @@ def main():
         print('Video Information for {}'.format(video))
         success, banner_info = video_info(filename=video)
 
-        if not success:
-            return 1
-
-        if config.md5 and not DRYRUN:
-            md5value = md5(video)
-            banner_info['md5'] = md5value
-            if not QUIET:
-                print('MD5 calculated as {}'.format(md5value))
-        elif config.md5:
-            banner_info['md5'] = "13227ada4af540092b7c5821c9ff321a"
-            md5value = random_string(stringlength=32)
-            banner_info['md5'] = md5value
-
-        banner_info['filename'] = video
-        banner_info['basename'] = os.path.basename(video)
-        banner_info['dirname'] = os.path.dirname(video)
-
-        if config.part_id and config.studio_id:
-            # Change the filename for display
-            num_id = [str(i) for i in list(os.path.basename(banner_info['basename'].rsplit('.', 1)[0])) if i.isdigit()]
-            banner_info['part_id'] = config.part_id + "".join(num_id)
-        else:
-            banner_info['part_id'] = None
-
-        output_filename = config.out_dir + "/"
-
-        if config.md5:
-            output_filename += str(md5value) + "_"
-
-        output_filename += os.path.basename(video).split('.')[0]
-
-        if config.override:
-            output_filename = config.out_dir + "/" + config.override
-
-        if banner_info['part_id']:
-            output_filename = config.out_dir + "/" + banner_info['part_id']
-
-        if not QUIET and success:
-            print('Video Information: {info}'.format(info=banner_info))
-        if not QUIET and success:
-            print('Output Filename = {output}'.format(output=output_filename))
-
-        # calculate iables
-        tile_rows = config.tile_rows
-        tile_cols = config.tile_cols
-        num_tiles = tile_rows * tile_cols
-        tile_width = config.tile_width
-        tile_bk_color = config.tile_bk_color
-        video_frames = banner_info['video_frames']
-        tile_mod = int(int(video_frames) / num_tiles)
-        tile_expr = "not(mod(n," + str(tile_mod) + "))"
-        tile_layout = str(tile_rows) + "x" + str(tile_cols)
-
-        # Setup Preview Filters
-        filter_select = {
-            'filter_name': 'select',
-            'expr': tile_expr
-        }
-        filter_scale = {
-            'filter_name': 'scale',
-            'w': tile_width,
-            'h': '-1'
-
-        }
-        filter_tile = {'filter_name': 'tile',
-                       'layout': tile_layout,
-                       'padding': '4',
-                       'margin': '4',
-                       'color': tile_bk_color
-                       }
-
-        input_args = {
-            'loglevel': 'panic',
-            'hide_banner': None,
-            'r': '10'
-        }
-
-        if config.hwaccel:
-            #input_args.update({'hwaccel': HWACCEL[config.hwaccel]})
-            input_args.update({'hwaccel': 'auto'})
+        if success:
 
 
-        if DEBUG:
-            FFMPEG_CMD = (
-                ffmpeg
-                    .input(video, **input_args)
-                    .filter(**filter_select)
-                    .filter(**filter_scale)
-                    .filter(**filter_tile)
-                    .output(output_filename + '.jpg', vframes=1, format='image2', vcodec='mjpeg', threads=1)
-                    .overwrite_output()
-                    .compile(cmd=FFMPEG)
-            )
-            print("FFMPEG CMD: {cmd}".format(cmd=" ".join(FFMPEG_CMD)))
+            if config.md5 and not DRYRUN:
+                md5value = md5(video)
+                banner_info['md5'] = md5value
+                if not QUIET:
+                    print('MD5 calculated as {}'.format(md5value))
+            elif config.md5:
+                banner_info['md5'] = "13227ada4af540092b7c5821c9ff321a"
+                md5value = random_string(stringlength=32)
+                banner_info['md5'] = md5value
 
-        # Create first image
-        if not DRYRUN:
-            try:
-                out, err = (
+            banner_info['filename'] = video
+            banner_info['basename'] = os.path.basename(video)
+            banner_info['dirname'] = os.path.dirname(video)
+
+            if config.part_id and config.studio_id:
+                # Change the filename for display
+                num_id = [str(i) for i in list(os.path.basename(banner_info['basename'].rsplit('.', 1)[0])) if i.isdigit()]
+                banner_info['part_id'] = config.part_id + "".join(num_id)
+            else:
+                banner_info['part_id'] = None
+
+            output_filename = config.out_dir + "/"
+
+            if config.md5:
+                output_filename += str(md5value) + "_"
+
+            output_filename += os.path.basename(video).split('.')[0]
+
+            if config.override:
+                output_filename = config.out_dir + "/" + config.override
+
+            if banner_info['part_id']:
+                output_filename = config.out_dir + "/" + banner_info['part_id']
+
+            if not QUIET and success:
+                print('Video Information: {info}'.format(info=banner_info))
+            if not QUIET and success:
+                print('Output Filename = {output}'.format(output=output_filename))
+
+            # calculate iables
+            tile_rows = config.tile_rows
+            tile_cols = config.tile_cols
+            num_tiles = tile_rows * tile_cols
+            tile_width = config.tile_width
+            tile_bk_color = config.tile_bk_color
+            video_frames = banner_info['video_frames']
+            tile_mod = int(int(video_frames) / num_tiles)
+            tile_expr = "not(mod(n," + str(tile_mod) + "))"
+            tile_layout = str(tile_rows) + "x" + str(tile_cols)
+
+            # Setup Preview Filters
+            filter_select = {
+                'filter_name': 'select',
+                'expr': tile_expr
+            }
+            filter_scale = {
+                'filter_name': 'scale',
+                'w': tile_width,
+                'h': '-1'
+
+            }
+            filter_tile = {'filter_name': 'tile',
+                           'layout': tile_layout,
+                           'padding': '4',
+                           'margin': '4',
+                           'color': tile_bk_color
+                           }
+
+            input_args = {
+                'loglevel': 'panic',
+                'hide_banner': None,
+                'r': '10'
+            }
+
+            if config.hwaccel:
+                #input_args.update({'hwaccel': HWACCEL[config.hwaccel]})
+                input_args.update({'hwaccel': 'auto'})
+
+
+            if DEBUG or DRYRUN:
+                FFMPEG_CMD = (
                     ffmpeg
                         .input(video, **input_args)
                         .filter(**filter_select)
@@ -776,84 +760,103 @@ def main():
                         .filter(**filter_tile)
                         .output(output_filename + '.jpg', vframes=1, format='image2', vcodec='mjpeg', threads=1)
                         .overwrite_output()
-                        .run(cmd=FFMPEG, capture_stdout=True)
+                        .compile(cmd=FFMPEG)
                 )
-            except Exception as error:
-                banner_info['comments'] = error
+                print("FFMPEG CMD: {cmd}".format(cmd=" ".join(FFMPEG_CMD)))
 
-        else:
-            with Image() as blank_img:
-                blank_img.blank(2045, 1155, background=config.tile_bk_color)
-                blank_img.save(filename=output_filename + '.jpg')
+            # Create first image
+            if not DRYRUN:
+                try:
+                    out, err = (
+                        ffmpeg
+                            .input(video, **input_args)
+                            .filter(**filter_select)
+                            .filter(**filter_scale)
+                            .filter(**filter_tile)
+                            .output(output_filename + '.jpg', vframes=1, format='image2', vcodec='mjpeg', threads=1)
+                            .overwrite_output()
+                            .run(cmd=FFMPEG, capture_stdout=True)
+                    )
+                except Exception as error:
+                    banner_info['comments'] = error
+
+            else:
+                with Image() as blank_img:
+                    blank_img.blank(2045, 1155, background=config.tile_bk_color)
+                    blank_img.save(filename=output_filename + '.jpg')
 
 
 
-        # Get the size of the image
-        with Image(filename=output_filename + '.jpg') as img:
+            # Get the size of the image
+            with Image(filename=output_filename + '.jpg') as img:
+                if DEBUG:
+                    print(img.size)
+                image_width, image_height = img.size
+                resize_width = int(round(image_width * 1.05))
+                border_width = int((resize_width - image_width) / 2 * - 1)
+                resize_height = int(round(image_height * 1.25)) + (3 * int(config.font_size))
+                border_height = ((resize_height - image_height) * -1) - border_width
+
+                img.background_color = tile_bk_color
+                img.gravity = 'north'
+                img.extent(
+                    width=resize_width,
+                    height=resize_height,
+                    x=border_width, y=border_height
+                )
+
+                img.save(filename=output_filename + '.tmp.jpg')
+
             if DEBUG:
-                print(img.size)
-            image_width, image_height = img.size
-            resize_width = int(round(image_width * 1.05))
-            border_width = int((resize_width - image_width) / 2 * - 1)
-            resize_height = int(round(image_height * 1.25)) + (3 * int(config.font_size))
-            border_height = ((resize_height - image_height) * -1) - border_width
+                print('Image Border width {0} and height {1}'.format(border_width, border_height))
 
-            img.background_color = tile_bk_color
-            img.gravity = 'north'
-            img.extent(
-                width=resize_width,
-                height=resize_height,
-                x=border_width, y=border_height
-            )
+            # Create Banner Image
+            if config.part_id:
+                message = "Part Number: {EDGEID}\n".format(EDGEID=banner_info['part_id'])
+            else:
+                message = ""
+            message += """{MP4NAME}
+            {video_width} x {video_height} format {ASPECT}
+            codec {codec_long_name}
+            size {video_size}
+            runtime {runtime} framerate {video_frame_rate}
+            """.format(MP4NAME=banner_info['basename'],
+                       video_height=banner_info['video_height'],
+                       video_width=banner_info['video_width'],
+                       ASPECT=banner_info['video_aspect'],
+                       codec_long_name=banner_info['codec_long_name'],
+                       video_size=banner_info['video_size'],
+                       runtime=banner_info['video_duration'],
+                       video_frame_rate=banner_info['video_frame_rate']
 
-            img.save(filename=output_filename + '.tmp.jpg')
+                       )
+            if VERBOSE and not QUIET:
+                print(message)
 
-        if DEBUG:
-            print('Image Border width {0} and height {1}'.format(border_width, border_height))
+            with Drawing() as draw:
+                draw.stroke_color = Color(config.tile_fg_color)
+                draw.stroke_width = 1
+                draw.font = 'helvetica'
+                draw.font_size = int(config.font_size)
+                draw.text_kerning = 2
+                draw.fill_color = Color(config.tile_fg_color)
+                with Image(filename=output_filename + '.tmp.jpg') as img:
+                    draw.draw(img)
+                    img.annotate(message, draw, 30, int(config.font_size) + 10)
+                    img.save(filename=output_filename + '.jpg')
 
-        # Create Banner Image
-        if config.part_id:
-            message = "Part Number: {EDGEID}\n".format(EDGEID=banner_info['part_id'])
+            os.remove(output_filename + '.tmp.jpg')
+
+            if VERBOSE and not QUIET:
+                im = Display(output_filename + '.jpg')
+                im.show()
+
+            myDB.insert_update(table='preview', key_field='filename', key_value=video, data=banner_info)
+            myDB.commit()
+
         else:
-            message = ""
-        message += """{MP4NAME}
-        {video_width} x {video_height} format {ASPECT}
-        codec {codec_long_name}
-        size {video_size}
-        runtime {runtime} framerate {video_frame_rate}
-        """.format(MP4NAME=banner_info['basename'],
-                   video_height=banner_info['video_height'],
-                   video_width=banner_info['video_width'],
-                   ASPECT=banner_info['video_aspect'],
-                   codec_long_name=banner_info['codec_long_name'],
-                   video_size=banner_info['video_size'],
-                   runtime=banner_info['video_duration'],
-                   video_frame_rate=banner_info['video_frame_rate']
+            print('Video information for {video} failed skipping'.format(video=video))
 
-                   )
-        if VERBOSE and not QUIET:
-            print(message)
-
-        with Drawing() as draw:
-            draw.stroke_color = Color(config.tile_fg_color)
-            draw.stroke_width = 1
-            draw.font = 'helvetica'
-            draw.font_size = int(config.font_size)
-            draw.text_kerning = 2
-            draw.fill_color = Color(config.tile_fg_color)
-            with Image(filename=output_filename + '.tmp.jpg') as img:
-                draw.draw(img)
-                img.annotate(message, draw, 30, int(config.font_size) + 10)
-                img.save(filename=output_filename + '.jpg')
-
-        os.remove(output_filename + '.tmp.jpg')
-
-        if VERBOSE and not QUIET:
-            im = Display(output_filename + '.jpg')
-            im.show()
-
-        myDB.insert_update(table='preview', key_field='filename', key_value=video, data=banner_info)
-        myDB.commit()
     myDB.close()
 
     print('End of Program')
