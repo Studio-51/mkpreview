@@ -16,5 +16,4 @@ script:
 
 deploy:
     provider: pypi
-    user: "pypi-AgEIcHlwaS5vcmcCJDBkMzMzNWQ3LTYwNjMtNGQyNy1hMzIxLTU0MmE1Njc4MjAwNQACOnsicGVybWlzc2lvbnMiOiB7InByb2plY3RzIjogWyJta3ByZXZpZXciXX0sICJ2ZXJzaW9uIjogMX0AAAYgsqCTeuCT6XNcWiRXj1UfIqy8LHyedup4bwq4UFdnNhM"
-    password: "Your PyPI API token, including the pypi- prefix"
+    
