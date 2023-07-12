@@ -114,3 +114,15 @@ report.html
 
 # Idea work space
 .idea/
+
+# Travis 
+.travis.yml
+
+# Docker
+.dockerignore
+
+# editor
+.editorconfig
+
+# bumpversion
+.bumversion.cfg
